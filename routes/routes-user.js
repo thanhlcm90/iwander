@@ -113,7 +113,7 @@ module.exports = function(app) {
             var query = {
                 email: email
             };
-            User.findOne(query, function(err, data) {
+            User.findOne(query, '+hashed_password', function(err, data) {
                 if (!err) { // query successfully
                     if (data === null) { // not found user
                         return next(new restify.NotAuthorizedError("email doesn't exists"));

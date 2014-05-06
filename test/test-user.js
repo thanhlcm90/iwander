@@ -266,16 +266,10 @@ describe('Get user info api get:' + consts.url_user_get, function() {
 });
 
 describe('Update user api put:' + consts.url_user_update, function() {
-    it('return ' + successStatusCode + ' when update success', function(done) {
+    it('return ' + successStatusCode + ' when update fullname success', function(done) {
         Factory.build('user2', function(user) {
             request(app).put(consts.url_user_update.replace(':token', token))
                 .field('fullname', user.fullname)
-                .field('mobile', user.mobile)
-                .field('bio', user.bio)
-                .field('gender', user.gender)
-                .field('city', user.city)
-                .field('country', user.country)
-                .field('birthday', user.birthday)
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
@@ -283,12 +277,36 @@ describe('Update user api put:' + consts.url_user_update, function() {
                     expect(res).to.exist;
                     expect(res.statusCode).to.equal(successStatusCode);
                     expect(res.body.fullname).to.equal(user.fullname);
-                    expect(res.body.mobile).to.equal(user.mobile);
-                    expect(res.body.bio).to.equal(user.bio);
-                    expect(res.body.gender).to.equal(user.gender);
-                    expect(res.body.city).to.equal(user.city);
-                    expect(res.body.country).to.equal(user.country);
-                    expect(moment(res.body.birthday).format('YYYY-MM-DD')).to.equal(moment(user.birthday).format('YYYY-MM-DD'));
+                    done();
+                })
+        });
+    })
+    it('return ' + successStatusCode + ' when update password success', function(done) {
+        Factory.build('user2', function(user) {
+            request(app).put(consts.url_user_update.replace(':token', token))
+                .field('password', user.password)
+                .expect('Content-Type', jsonContentType)
+                .expect(successStatusCode)
+                .end(function(err, res) {
+                    if (err) console.log(res.body);
+                    expect(res).to.exist;
+                    expect(res.statusCode).to.equal(successStatusCode);
+                    done();
+                })
+        });
+    })
+    it('return ' + successStatusCode + ' when update both fullname & password success', function(done) {
+        Factory.build('user2', function(user) {
+            request(app).put(consts.url_user_update.replace(':token', token))
+                .field('fullname', user.fullname)
+                .field('password', user.password)
+                .expect('Content-Type', jsonContentType)
+                .expect(successStatusCode)
+                .end(function(err, res) {
+                    if (err) console.log(res.body);
+                    expect(res).to.exist;
+                    expect(res.statusCode).to.equal(successStatusCode);
+                    expect(res.body.fullname).to.equal(user.fullname);
                     done();
                 })
         });
