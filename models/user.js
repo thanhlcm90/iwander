@@ -23,7 +23,8 @@ var UserSchema = new Schema({
     },
     hashed_password: {
         type: String,
-        trim: true
+        trim: true,
+        select: false
     },
     token: {
         type: String,
