@@ -83,6 +83,8 @@ module.exports = function(app) {
         user.password = req.params.password;
         user.save(function(err) {
             next.ifError(err);
+            // delete row hashed_password
+            user.hashed_password = undefined;
             // save succesfully, return status code 201 with user json
             res.send(201, user);
             next();
@@ -124,6 +126,8 @@ module.exports = function(app) {
                             // email, password are correct, check token
                             var token = data.token;
                             if (token && token.length) { // token exists
+                                // delete row hashed_password
+                                data.hashed_password = undefined;
                                 // return status code 200 with current token
                                 res.send(200, data);
                             } else {
@@ -133,6 +137,8 @@ module.exports = function(app) {
                                 // save new token
                                 data.save(function(err) {
                                     if (!err) {
+                                        // delete row hashed_password
+                                        data.hashed_password = undefined;
                                         // save successfully, return status code 200 with new token
                                         res.send(200, data);
                                         return next();

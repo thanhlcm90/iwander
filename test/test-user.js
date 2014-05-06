@@ -92,7 +92,12 @@ describe('Register api post:' + consts.url_user_register, function() {
                     .field('password', user.password)
                     .expect('Content-Type', jsonContentType)
                     .expect(createdStatusCode)
-                    .end(done);
+                    .end(function(err, res) {
+                        if (err) console.log(res.body);
+                        res.statusCode.should.equal(createdStatusCode);
+                        should.not.exist(res.body.hashed_password);
+                        done();
+                    });
             });
         });
         it('should save the user to the database', function(done) {
@@ -144,7 +149,12 @@ describe('Register api post:' + consts.url_user_register, function() {
                     .field('password', user.password)
                     .expect('Content-Type', jsonContentType)
                     .expect(createdStatusCode)
-                    .end(done);
+                    .end(function(err, res) {
+                        if (err) console.log(res.body);
+                        res.statusCode.should.equal(createdStatusCode);
+                        should.not.exist(res.body.hashed_password);
+                        done();
+                    });
             });
         });
         it('should save the user to the database', function(done) {
@@ -207,6 +217,7 @@ describe('Login api post:' + consts.url_user_login, function() {
                         res.statusCode.should.equal(successStatusCode);
                         token = res.body.token;
                         should.exist(token);
+                        should.not.exist(res.body.hashed_password);
                         done();
                     });
             });
@@ -232,6 +243,7 @@ describe('Login api post:' + consts.url_user_login, function() {
                         res.statusCode.should.equal(successStatusCode);
                         var newToken = res.body.token;
                         should.exist(newToken);
+                        should.not.exist(res.body.hashed_password);
                         newToken.should.equal(token);
                         done();
                     });
