@@ -13,7 +13,9 @@ global.__config_path = config.root + '/config';
 global.__routes_path = config.root + '/routes';
 
 // setup Database
-var connectStr = config.db_prefix + '://' + config.host + ':' + config.db_port + '/' + config.db_database;
+var connectStr = process.env.MONGOLAB_URI ||
+    process.env.MONGOHQ_URL ||
+    (config.db_prefix + '://' + config.host + ':' + config.db_port + '/' + config.db_database);
 console.log(connectStr);
 mongoose.connect(connectStr, {
     server: {
