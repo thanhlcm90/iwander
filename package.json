@@ -17,10 +17,10 @@
         "mongoose": "latest",
         "longjohn": "latest",
         "toobusy": "latest",
-        "socket.io": "latest",
+        "moment": "latest",
         "forever": "latest",
         "async": "latest",
-        "factory-lady":"latest"
+        "factory-lady": "latest"
     },
     "devDependencies": {
         "supertest": "latest",
