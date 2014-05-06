@@ -80,7 +80,7 @@ require('./routes')(app);
 var port = process.env.PORT || config.port;
 var host = process.env.HOST || config.host;
 
-app.listen(port, host);
+app.listen(port);
 console.log('App started on ' + host + ':' + port);
 
 module.exports = app;
