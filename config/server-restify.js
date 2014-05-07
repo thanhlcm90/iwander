@@ -34,7 +34,7 @@ function hookRequestWithBusy(req, res, next) {
 
 module.exports = function(app, sessionKey) {
     if (config.mode === 'dev') {
-        var longjohn = require("longjohn")
+        var longjohn = require("longjohn");
         longjohn.async_trace_limit = 5; // defaults to 10
         longjohn.empty_frame = 'ASYNC CALLBACK';
     }
@@ -47,8 +47,8 @@ module.exports = function(app, sessionKey) {
     console.log("os: " + os.platform() + ", " + os.release());
     // having issues on WIndows with nodegyp and toobusy, Windows SDK solution works on some platforms
     // https://github.com/TooTallNate/node-gyp/#installation
-    if (os.platform().indexOf('win') == 0) {
-        toobusy = require('toobusy')
+    if (os.platform().indexOf('win') === 0) {
+        toobusy = require('toobusy');
         app.use(hookRequestWithBusy);
     } else {
         app.use(hookRequest);
