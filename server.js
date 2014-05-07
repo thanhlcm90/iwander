@@ -39,11 +39,11 @@ db.on('reconnected', function() {
 });
 db.on('disconnected', function() {
     console.log('MongoDB disconnected!');
-    mongoose.connect(connectStr, {
-        server: {
-            auto_reconnect: true
-        }
-    });
+    // mongoose.connect(connectStr, {
+    //     server: {
+    //         auto_reconnect: true
+    //     }
+    // });
 });
 
 // Bootstrap models

@@ -38,7 +38,7 @@ var UserSchema = new Schema({
         type: Date,
         default: Date.now
     }
-})
+});
 
 /**
  * Virtuals
@@ -46,19 +46,19 @@ var UserSchema = new Schema({
 UserSchema
     .virtual('password')
     .set(function(password) {
-        this._password = password
-        this.hashed_password = this.encryptPassword(password)
+        this._password = password;
+        this.hashed_password = this.encryptPassword(password);
     })
     .get(function() {
-        return this._password
-    })
+        return this._password;
+    });
 
 /**
  * Validations
  */
 var validatePresenceOf = function(value) {
-    return value && value.length
-}
+    return value && value.length;
+};
 UserSchema.path('email').required(true, 'Email cannot be blank');
 UserSchema.path('hashed_password').required(true, 'Password cannot be blank');
 
@@ -74,7 +74,7 @@ UserSchema.pre('save', function(next) {
     }
     this.dateUpdated = Date.now();
     next();
-})
+});
 
 /**
  * Methods

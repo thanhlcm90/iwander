@@ -1,31 +1,32 @@
-{
-    "name": "restful",
-    "description": "restful",
-    "version": "0.0.1",
-    "private": false,
-    "author": "Thanh Le <thanhlcm90@gmail.com> (https://github.com/thanhlcm90)",
-    "engines": {
-        "node": "0.10.x",
-        "npm": "1.2.x"
-    },
-    "scripts": {
-        "start": "NODE_ENV=development ./node_modules/.bin/nodemon server.js",
-        "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec --timeout 10000 test/test-*.js"
-    },
-    "dependencies": {
-        "restify": "latest",
-        "mongoose": "latest",
-        "longjohn": "latest",
-        "toobusy": "latest",
-        "moment": "latest",
-        "forever": "latest",
-        "async": "latest",
-        "factory-lady": "latest"
-    },
-    "devDependencies": {
-        "supertest": "latest",
-        "chai": "latest",
-        "mocha": "latest",
-        "nodemon": "latest"
+    {
+        "name": "restful",
+        "description": "restful",
+        "version": "0.0.1",
+        "private": false,
+        "author": "Thanh Le <thanhlcm90@gmail.com> (https://github.com/thanhlcm90)",
+        "engines": {
+            "node": "0.10.x",
+            "npm": "1.2.x"
+        },
+        "scripts": {
+            "start": "NODE_ENV=development ./node_modules/.bin/nodemon server.js",
+            "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec --timeout 1000 test/test-*.js"
+        },
+        "dependencies": {
+            "restify": "latest",
+            "mongoose": "latest",
+            "longjohn": "latest",
+            "toobusy": "latest",
+            "moment": "latest",
+            "forever": "latest",
+            "async": "latest",
+            "factory-lady": "latest"
+        },
+        "devDependencies": {
+            "supertest": "latest",
+            "chai": "latest",
+            "mocha": "latest",
+            "nodemon": "latest",
+            "jshint": "latest"
+        }
     }
-}

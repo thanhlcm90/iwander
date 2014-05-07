@@ -205,4 +205,4 @@ module.exports = function(app) {
     app.post(consts.url_user_login, login);
     app.post(consts.url_user_logout, logout);
     app.put(consts.url_user_update, updateUser);
-}
+};

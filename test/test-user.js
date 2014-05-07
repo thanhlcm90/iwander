@@ -21,7 +21,12 @@ var missingError = new restify.MissingParameterError().statusCode, // 409
     createdStatusCode = 201,
     successStatusCode = 200,
     notFoundError = 404;
-
+before(function(done) {
+    // check database connection
+    mongoose.connection.once('open', function callback() {
+        done();
+    });
+});
 describe('Register api post:' + consts.url_user_register, function() {
     describe('Invalid paramters', function() {
         before(function(done) {
