@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     ObjectId = mongoose.Types.ObjectId,
     restify = require('restify'),
     moment = require('moment'),
-    utils = require('../libs/utils'),
+    validator = require('validator'),
     consts = require(__config_path + "/consts");
 
 module.exports = function(app) {
@@ -18,24 +18,22 @@ module.exports = function(app) {
      *  - return 200 OK                 when change successfully
      */
     function updateUser(req, res, next) {
-        var token = req.params.token;
-        var query = {
-            token: token
-        };
-        User.findOne(query, function(err, data) {
+        // get user model from request
+        var user = req.user;
+        if (validator.isNull(req.params.fullname) && validator.isNull(req.params.password)) {
+            return next(new restify.MissingParameterError('fullname or password cannot be blank'));
+        } else if (!validator.isNull(req.params.fullname)) {
+            user.fullname = req.params.fullname;
+        } else if (!validator.isNull(req.params.password)) {
+            user.password = req.params.password;
+        }
+        user.save(function(err, data) {
+            if (err) console.log(err);
             next.ifError(err);
-            if (utils.checkNotNull(req.params.fullname)) {
-                data.fullname = req.params.fullname;
-            }
-            if (utils.checkNotNull(req.params.password)) {
-                data.password = req.params.password;
-            }
-            data.save(function(err, data) {
-                if (err) console.log(err);
-                next.ifError(err);
-                res.send(data);
-                next();
-            });
+            // delete row hashed_password
+            data.hashed_password = undefined;
+            res.send(data);
+            next();
         });
     }
 
@@ -52,15 +50,8 @@ module.exports = function(app) {
      * @param next method
      */
     function getUser(req, res, next) {
-        var token = req.params.token;
-        var query = {
-            token: token
-        };
-        User.findOne(query, consts.user_column_query, function(err, data) {
-            next.ifError(err);
-            res.send(data);
-            next();
-        });
+        res.send(req.user);
+        next();
     }
 
     /**
@@ -76,18 +67,38 @@ module.exports = function(app) {
      * @param next method
      */
     function register(req, res, next) {
-        // Create a new user model, fill it up and save it to Mongodb
-        var user = new User();
-        user.fullname = req.params.fullname;
-        user.email = req.params.email;
-        user.password = req.params.password;
-        user.save(function(err) {
+        // validator
+        if (validator.isNull(req.params.fullname)) {
+            return next(new restify.MissingParameterError('fullname cannot be blank'));
+        } else if (validator.isNull(req.params.email)) {
+            return next(new restify.MissingParameterError('email cannot be blank'));
+        } else if (validator.isNull(req.params.password)) {
+            return next(new restify.MissingParameterError('password cannot be blank'));
+        } else if (!validator.isEmail(req.params.email)) {
+            return next(new restify.MissingParameterError('email is not correct format'));
+        }
+
+        User.findOne({
+            email: req.params.email.toLowerCase().trim()
+        }, function(err, data) {
             next.ifError(err);
-            // delete row hashed_password
-            user.hashed_password = undefined;
-            // save succesfully, return status code 201 with user json
-            res.send(201, user);
-            next();
+            if (data) {
+                return next(new restify.MissingParameterError('email is exists'));
+            } else {
+                // Create a new user model, fill it up and save it to Mongodb
+                var user = new User();
+                user.fullname = req.params.fullname;
+                user.email = req.params.email;
+                user.password = req.params.password;
+                user.save(function(err) {
+                    next.ifError(err);
+                    // delete row hashed_password
+                    user.hashed_password = undefined;
+                    // save succesfully, return status code 201 with user json
+                    res.send(201, user);
+                    next();
+                });
+            }
         });
     }
 
@@ -107,59 +118,65 @@ module.exports = function(app) {
      * @param next method
      */
     function login(req, res, next) {
-        // get email and password params and check params exists
         var email = req.params.email;
         var password = req.params.password;
-        if (email && password && email.length && password.length) {
-            // query user with email
-            var query = {
-                email: email
-            };
-            User.findOne(query, '+hashed_password', function(err, data) {
-                if (!err) { // query successfully
-                    if (data === null) { // not found user
-                        return next(new restify.NotAuthorizedError("email doesn't exists"));
-                    } else { // found user
-                        if (!data.authenticate(password)) { // check password is correct?
-                            return next(new restify.NotAuthorizedError("password isn't correct"));
+
+        // validator
+        if (validator.isNull(email)) {
+            return next(new restify.MissingParameterError('email cannot be blank'));
+        } else if (validator.isNull(password)) {
+            return next(new restify.MissingParameterError('password cannot be blank'));
+        } else if (!validator.isEmail(email)) {
+            return next(new restify.MissingParameterError('email is not correct format'));
+        }
+
+        // get email and password params and check params exists
+        // query user with email
+        var query = {
+            email: email
+        };
+        User.findOne(query, '+hashed_password', function(err, data) {
+            if (!err) { // query successfully
+                if (data === null) { // not found user
+                    return next(new restify.NotAuthorizedError("email doesn't exists"));
+                } else { // found user
+                    if (!data.authenticate(password)) { // check password is correct?
+                        return next(new restify.NotAuthorizedError("password isn't correct"));
+                    } else {
+                        // email, password are correct, check token
+                        var token = data.token;
+                        if (token && token.length) { // token exists
+                            // delete row hashed_password
+                            data.hashed_password = undefined;
+                            // return status code 200 with current token
+                            res.send(200, data);
                         } else {
-                            // email, password are correct, check token
-                            var token = data.token;
-                            if (token && token.length) { // token exists
-                                // delete row hashed_password
-                                data.hashed_password = undefined;
-                                // return status code 200 with current token
-                                res.send(200, data);
-                            } else {
-                                // generate new token (mongo ObjectId)
-                                token = new ObjectId().toString();
-                                data.token = token;
-                                // save new token
-                                data.save(function(err) {
-                                    if (!err) {
-                                        // delete row hashed_password
-                                        data.hashed_password = undefined;
-                                        // save successfully, return status code 200 with new token
-                                        res.send(200, data);
-                                        return next();
-                                    } else {
-                                        return next(err);
-                                    }
-                                });
-                            }
+                            // generate new token (mongo ObjectId)
+                            token = new ObjectId().toString();
+                            data.token = token;
+                            // save new token
+                            data.save(function(err) {
+                                if (!err) {
+                                    // delete row hashed_password
+                                    data.hashed_password = undefined;
+                                    // save successfully, return status code 200 with new token
+                                    res.send(200, data);
+                                    return next();
+                                } else {
+                                    return next(err);
+                                }
+                            });
                         }
                     }
-                } else {
-                    var errObj = err;
-                    if (err.err) {
-                        errObj = err.err;
-                    }
-                    return next(new restify.InternalError(errObj));
                 }
-            });
-        } else {
-            return next(new restify.MissingParameterError("email param or password param is missing."));
-        }
+            } else {
+                var errObj = err;
+                if (err.err) {
+                    errObj = err.err;
+                }
+                return next(new restify.InternalError(errObj));
+            }
+        });
     }
 
     /**
@@ -176,25 +193,15 @@ module.exports = function(app) {
      * @param next method
      */
     function logout(req, res, next) {
-        var token = req.params.token;
-        var query = {
-            token: token
-        };
-        User.findOne(query, function(err, user) {
-            if (!err && user !== null) {
-                // found, reset user token and save
-                user.token = null;
-                user.save(function(err) {
-                    if (!err) {
-                        // saving successfully, send status code 200
-                        res.send(200);
-                        return next();
-                    } else {
-                        return next(err);
-                    }
-                });
+        var user = req.user;
+        user.token = null;
+        user.save(function(err) {
+            if (!err) {
+                // saving successfully, send status code 200
+                res.send(200);
+                return next();
             } else {
-                return next(new restify.NotAuthorizedError("Access restricted."));
+                return next(err);
             }
         });
     }

@@ -15,18 +15,11 @@ var jsonContentType = 'application/json',
     token = '',
     count = 0;
 
-var missingError = new restify.MissingParameterError().statusCode, // 409
-    validationError = 500,
+var validationError = new restify.MissingParameterError().statusCode, // 409
     authorizedError = new restify.NotAuthorizedError().statusCode, // 403
     createdStatusCode = 201,
     successStatusCode = 200,
     notFoundError = 404;
-before(function(done) {
-    // check database connection
-    mongoose.connection.once('open', function callback() {
-        done();
-    });
-});
 describe('Register api post:' + consts.url_user_register, function() {
     describe('Invalid paramters', function() {
         before(function(done) {
@@ -173,26 +166,26 @@ describe('Register api post:' + consts.url_user_register, function() {
 
 describe('Login api post:' + consts.url_user_login, function() {
     describe('Invalid paramters', function() {
-        it('return ' + missingError + ' when all params missing', function(done) {
+        it('return ' + validationError + ' when all params missing', function(done) {
             request(app).post(consts.url_user_login)
-                .expect(missingError)
+                .expect(validationError)
                 .end(done);
         });
-        it('return ' + missingError + ' when email missing', function(done) {
+        it('return ' + validationError + ' when email missing', function(done) {
             Factory.build('user1', function(user) {
                 request(app).post(consts.url_user_login)
                     .field('password', user.password)
                     .expect('Content-Type', jsonContentType)
-                    .expect(missingError)
+                    .expect(validationError)
                     .end(done);
             });
         });
-        it('return ' + missingError + ' when password missing', function(done) {
+        it('return ' + validationError + ' when password missing', function(done) {
             Factory.build('user1', function(user) {
                 request(app).post(consts.url_user_login)
                     .field('email', user.email)
                     .expect('Content-Type', jsonContentType)
-                    .expect(missingError)
+                    .expect(validationError)
                     .end(done);
             });
         });
@@ -283,51 +276,70 @@ describe('Get user info api get:' + consts.url_user_get, function() {
 });
 
 describe('Update user api put:' + consts.url_user_update, function() {
-    it('return ' + successStatusCode + ' when update fullname success', function(done) {
-        Factory.build('user2', function(user) {
-            request(app).put(consts.url_user_update.replace(':token', token))
-                .field('fullname', user.fullname)
+    describe('Invalid parameters', function() {
+        it('return ' + notFoundError + ' when token missing', function(done) {
+            request(app).put(consts.url_user_update)
                 .expect('Content-Type', jsonContentType)
-                .expect(successStatusCode)
-                .end(function(err, res) {
-                    if (err) console.log(res.body);
-                    expect(res).to.exist;
-                    expect(res.statusCode).to.equal(successStatusCode);
-                    expect(res.body.fullname).to.equal(user.fullname);
-                    done();
-                })
+                .expect(notFoundError)
+                .end(done)
         });
-    })
-    it('return ' + successStatusCode + ' when update password success', function(done) {
-        Factory.build('user2', function(user) {
-            request(app).put(consts.url_user_update.replace(':token', token))
-                .field('password', user.password)
+        it('return ' + authorizedError + ' when fake token "123ABC" not correct', function(done) {
+            request(app).put(consts.url_user_update.replace(':token', "123ABC"))
                 .expect('Content-Type', jsonContentType)
-                .expect(successStatusCode)
-                .end(function(err, res) {
-                    if (err) console.log(res.body);
-                    expect(res).to.exist;
-                    expect(res.statusCode).to.equal(successStatusCode);
-                    done();
-                })
+                .expect(authorizedError)
+                .end(done);
         });
-    })
-    it('return ' + successStatusCode + ' when update both fullname & password success', function(done) {
-        Factory.build('user2', function(user) {
-            request(app).put(consts.url_user_update.replace(':token', token))
-                .field('fullname', user.fullname)
-                .field('password', user.password)
-                .expect('Content-Type', jsonContentType)
-                .expect(successStatusCode)
-                .end(function(err, res) {
-                    if (err) console.log(res.body);
-                    expect(res).to.exist;
-                    expect(res.statusCode).to.equal(successStatusCode);
-                    expect(res.body.fullname).to.equal(user.fullname);
-                    done();
-                })
-        });
-    })
+    });
+    describe('Valid parameters', function() {
+        it('return ' + successStatusCode + ' when update fullname success', function(done) {
+            Factory.build('user2', function(user) {
+                request(app).put(consts.url_user_update.replace(':token', token))
+                    .field('fullname', user.fullname)
+                    .expect('Content-Type', jsonContentType)
+                    .expect(successStatusCode)
+                    .end(function(err, res) {
+                        if (err) console.log(res.body);
+                        expect(res).to.exist;
+                        expect(res.statusCode).to.equal(successStatusCode);
+                        expect(res.body.fullname).to.equal(user.fullname);
+                        should.not.exist(res.body.hashed_password);
+                        done();
+                    })
+            });
+        })
+        it('return ' + successStatusCode + ' when update password success', function(done) {
+            Factory.build('user2', function(user) {
+                request(app).put(consts.url_user_update.replace(':token', token))
+                    .field('password', user.password)
+                    .expect('Content-Type', jsonContentType)
+                    .expect(successStatusCode)
+                    .end(function(err, res) {
+                        if (err) console.log(res.body);
+                        expect(res).to.exist;
+                        expect(res.statusCode).to.equal(successStatusCode);
+                        should.not.exist(res.body.hashed_password);
+                        done();
+                    })
+            });
+        })
+        it('return ' + successStatusCode + ' when update both fullname & password success', function(done) {
+            Factory.build('user2', function(user) {
+                request(app).put(consts.url_user_update.replace(':token', token))
+                    .field('fullname', user.fullname)
+                    .field('password', user.password)
+                    .expect('Content-Type', jsonContentType)
+                    .expect(successStatusCode)
+                    .end(function(err, res) {
+                        if (err) console.log(res.body);
+                        expect(res).to.exist;
+                        expect(res.statusCode).to.equal(successStatusCode);
+                        expect(res.body.fullname).to.equal(user.fullname);
+                        should.not.exist(res.body.hashed_password);
+                        done();
+                    })
+            });
+        })
+    });
 });
 
 describe('Logout api post:' + consts.url_user_logout, function() {

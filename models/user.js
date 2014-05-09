@@ -67,7 +67,7 @@ UserSchema.path('hashed_password').required(true, 'Password cannot be blank');
  */
 UserSchema.pre('save', function(next) {
     if (this.email.indexOf('@') <= 0) {
-        return next(new restify.InternalError('Email address must be valid'));
+        return next(new restify.MissingParameterError('Email address must be valid'));
     }
     if (!validatePresenceOf(this.username)) {
         this.username = this.email;

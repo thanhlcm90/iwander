@@ -18,7 +18,6 @@ function hookRequest(req, res, next) {
         auth.checkToken(req, res, next);
     }
 }
-
 /*
  * hook for every request with Busy, show log api request url
  */
@@ -53,4 +52,17 @@ module.exports = function(app, sessionKey) {
     } else {
         app.use(hookRequest);
     }
+    // handle uncaught exception, return status code 500
+    app.on('uncaughtException', function(req, res, route, err) {
+        // log it
+        console.error(err.stack);
+
+        // respond with 500 "Internal Server Error".
+        res.send(500, "Server has error, please contact Administrator");
+    });
+    app.on('after', function(req, res, route, err) {
+        if (err) {
+            console.error(err.stack);
+        }
+    });
 };

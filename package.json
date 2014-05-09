@@ -20,7 +20,8 @@
             "moment": "latest",
             "forever": "latest",
             "async": "latest",
-            "factory-lady": "latest"
+            "factory-lady": "latest",
+            "validator": "latest"
         },
         "devDependencies": {
             "supertest": "latest",
