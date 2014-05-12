@@ -90,6 +90,7 @@ module.exports = function(app) {
                 user.fullname = req.params.fullname;
                 user.email = req.params.email;
                 user.password = req.params.password;
+                user.token = new ObjectId().toString();
                 user.save(function(err) {
                     next.ifError(err);
                     // delete row hashed_password
