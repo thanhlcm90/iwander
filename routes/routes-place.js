@@ -178,7 +178,7 @@ module.exports = function(app) {
         var user = req.user;
         var year = new Date().getFullYear();
         // init start day, end day of year
-        var start = moment(year + '-01-01T00:00:00').toDate();
+        var start = moment.utc(year + '-01-01T00:00:00').toDate();
         var end = moment.utc(year + '-12-31T23:59:59').toDate();
         console.log(start);
         var where = {
