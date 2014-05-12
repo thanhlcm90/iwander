@@ -175,22 +175,22 @@ module.exports = function(app) {
      */
     function list(req, res, next) {
         var user = req.user;
-        var year = new Date().getFullYear();
-        // init start day, end day of year
-        var startStr = year + '-01-01T00:00:00';
-        var endStr = year + '-12-31T23:59:59';
-        var zone = moment().zone();
-        if (zone < 0) {
-            startStr = startStr + '+' + (-zone / 60) + (-zone % 60)
-            endStr = endStr + '+' + (-zone / 60) + (-zone % 60)
-        } else {
-            startStr = startStr + '-' + (zone / 60) + (zone % 60)
-            endStr = endStr + '-' + (zone / 60) + (zone % 60)
-        }
-        console.log(startStr);
-        var start = moment(startStr).toDate();
-        var end = moment(endStr).toDate();
+        // init start day is begin date of year
+        var start = new Date();
         console.log(start);
+        start.setMonth(0);
+        start.setDate(1);
+        start.setHours(0);
+        start.setMinutes(0);
+        start.setSeconds(0);
+
+        // init end day is end date of year
+        var end = new Date();
+        end.setMonth(11);
+        end.setDate(31);
+        end.setHours(23);
+        end.setMinutes(59);
+        end.setSeconds(59);
         var where = {
             user_id: user._id,
             time_start: {
@@ -198,7 +198,6 @@ module.exports = function(app) {
                 $lte: end
             }
         };
-        console.log(moment().zone());
         Place.aggregate()
             .match(where)
             .group({
