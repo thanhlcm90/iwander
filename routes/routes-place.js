@@ -43,7 +43,7 @@ module.exports = function(app) {
         if (!validator.isNull(timeStart)) {
             if (moment(timeStart).isValid()) {
                 // convert to javascript Date type
-                timeStart = moment(timeStart).toDate();
+                timeStart = moment(timeStart);
             } else {
                 return next(new restify.InvalidArgumentError('time_start is not date time'));
             }
@@ -52,30 +52,36 @@ module.exports = function(app) {
         }
         if (!validator.isNull(timeEnd) && moment(timeEnd).isValid()) {
             // convert to javascript Date type
-            timeEnd = moment(timeEnd).toDate();
+            timeEnd = moment(timeEnd);
         }
         // check validate param country_name
         if (validator.isNull(countryName)) {
             return next(new restify.InvalidArgumentError('country_name cannot be blank'));
         }
         // Set start is 00:00:00 of day
-        var start = new Date(timeStart);
-        start.setHours(0);
-        start.setMinutes(0);
-        start.setSeconds(0);
+        var start = timeStart.clone();
+        start.hour(0);
+        start.minute(0);
+        start.second(0);
+        start.zone("+02:00");
         // set end is 23:59:59 of day
-        var end = new Date(timeStart);
-        end.setHours(23);
-        end.setMinutes(59);
-        end.setSeconds(59);
+        var end = timeStart.clone();
+        end.hour(23);
+        end.minute(59);
+        end.second(59);
+        end.zone("+02:00");
+        console.log('start: ' + start.toDate());
+        console.log('end: ' + end.toDate());
+        console.log('start moment: ' + start);
+        console.log('end moment: ' + end);
 
         // condition query is user_id, country_name, and start_time between start and end
         var where = {
             user_id: user._id,
             country_name: countryName,
             time_start: {
-                $gte: start,
-                $lte: end
+                $gte: start.toDate(),
+                $lte: end.toDate()
             }
         };
         Place.findOne(where, function(err, data) {
@@ -90,8 +96,8 @@ module.exports = function(app) {
                 }
                 data.lng = lng;
                 data.lat = lat;
-                data.time_start = timeStart;
-                data.time_end = timeEnd;
+                data.time_start = timeStart.toDate();
+                data.time_end = timeEnd.toDate();
                 data.save(function(err, data) {
                     next.ifError(err);
                     res.send(200);
@@ -176,22 +182,24 @@ module.exports = function(app) {
     function list(req, res, next) {
         var user = req.user;
         // init start day is begin date of year
-        var start = new Date();
-        start.setMonth(0);
-        start.setDate(1);
-        start.setHours(0);
-        start.setMinutes(0);
-        start.setSeconds(0);
+        var start = moment();
+        start.month(0);
+        start.date(1);
+        start.hour(0);
+        start.minute(0);
+        start.second(0);
+        start.zone("+02:00");
 
         // init end day is end date of year
-        var end = new Date();
-        end.setMonth(11);
-        end.setDate(31);
-        end.setHours(23);
-        end.setMinutes(59);
-        end.setSeconds(59);
-        console.log(start);
-        console.log(end);
+        var end = moment();
+        end.month(11);
+        end.date(31);
+        end.hour(23);
+        end.minute(59);
+        end.second(59);
+        end.zone("+02:00");
+        console.log('start: ' + start.toDate());
+        console.log('end: ' + end.toDate());
         Place.find({
             user_id: user._id
         }, function(err, data) {
@@ -200,8 +208,8 @@ module.exports = function(app) {
         var where = {
             user_id: user._id,
             time_start: {
-                $gte: start,
-                $lte: end
+                $gte: start.toDate(),
+                $lte: end.toDate()
             }
         };
         Place.aggregate()
