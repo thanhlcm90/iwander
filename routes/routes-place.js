@@ -127,8 +127,8 @@ module.exports = function(app) {
         }
 
         // init start day, end day of year
-        var start = moment(year + '-01-01T00:00:00').toDate();
-        var end = moment(year + '-12-31T23:59:59').toDate();
+        var start = moment.utc(year + '-01-01T00:00:00').toDate();
+        var end = moment.utc(year + '-12-31T23:59:59').toDate();
         var where = {
             user_id: user._id,
             country_name: countryName.toLowerCase(),
