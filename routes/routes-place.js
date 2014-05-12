@@ -68,8 +68,6 @@ module.exports = function(app) {
         end.setHours(23);
         end.setMinutes(59);
         end.setSeconds(59);
-        console.log(moment.utc(timeStart).toDate());
-        console.log(moment(timeStart).toDate());
 
         // condition query is user_id, country_name, and start_time between start and end
         var where = {
@@ -128,8 +126,8 @@ module.exports = function(app) {
         }
 
         // init start day, end day of year
-        var start = moment.utc(year + '-01-01T00:00:00').toDate();
-        var end = moment.utc(year + '-12-31T23:59:59').toDate();
+        var start = moment(year + '-01-01T00:00:00').toDate();
+        var end = moment(year + '-12-31T23:59:59').toDate();
         var where = {
             user_id: user._id,
             country_name: countryName.toLowerCase(),
@@ -179,8 +177,19 @@ module.exports = function(app) {
         var user = req.user;
         var year = new Date().getFullYear();
         // init start day, end day of year
-        var start = moment.utc(year + '-01-01T00:00:00').toDate();
-        var end = moment.utc(year + '-12-31T23:59:59').toDate();
+        var startStr = year + '-01-01T00:00:00';
+        var endStr = year + '-12-31T23:59:59';
+        var zone = moment().zone();
+        if (zone < 0) {
+            startStr = startStr + '+' + (-zone / 60) + (-zone % 60)
+            endStr = endStr + '+' + (-zone / 60) + (-zone % 60)
+        } else {
+            startStr = startStr + '-' + (zone / 60) + (zone % 60)
+            endStr = endStr + '-' + (zone / 60) + (zone % 60)
+        }
+        console.log(startStr);
+        var start = moment(startStr).toDate();
+        var end = moment(endStr).toDate();
         console.log(start);
         var where = {
             user_id: user._id,
@@ -189,8 +198,7 @@ module.exports = function(app) {
                 $lte: end
             }
         };
-        console.log(moment.utc(year + '-01-01T00:00:00').toDate());
-        console.log(moment(year + '-01-01T00:00:00').toDate());
+        console.log(moment().zone());
         Place.aggregate()
             .match(where)
             .group({
