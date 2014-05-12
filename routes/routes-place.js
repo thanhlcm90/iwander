@@ -43,7 +43,7 @@ module.exports = function(app) {
         if (!validator.isNull(timeStart)) {
             if (moment(timeStart).isValid()) {
                 // convert to javascript Date type
-                timeStart = moment.utc(timeStart).toDate();
+                timeStart = moment(timeStart).toDate();
             } else {
                 return next(new restify.InvalidArgumentError('time_start is not date time'));
             }
@@ -52,7 +52,7 @@ module.exports = function(app) {
         }
         if (!validator.isNull(timeEnd) && moment(timeEnd).isValid()) {
             // convert to javascript Date type
-            timeEnd = moment.utc(timeEnd).toDate();
+            timeEnd = moment(timeEnd).toDate();
         }
         // check validate param country_name
         if (validator.isNull(countryName)) {
@@ -68,7 +68,8 @@ module.exports = function(app) {
         end.setHours(23);
         end.setMinutes(59);
         end.setSeconds(59);
-        console.log(start);
+        console.log(moment.utc(timeStart).toDate());
+        console.log(moment(timeStart).toDate());
 
         // condition query is user_id, country_name, and start_time between start and end
         var where = {
@@ -188,6 +189,8 @@ module.exports = function(app) {
                 $lte: end
             }
         };
+        console.log(moment.utc(year + '-01-01T00:00:00').toDate());
+        console.log(moment(year + '-01-01T00:00:00').toDate());
         Place.aggregate()
             .match(where)
             .group({
