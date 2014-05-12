@@ -177,7 +177,6 @@ module.exports = function(app) {
         var user = req.user;
         // init start day is begin date of year
         var start = new Date();
-        console.log(start);
         start.setMonth(0);
         start.setDate(1);
         start.setHours(0);
@@ -191,6 +190,13 @@ module.exports = function(app) {
         end.setHours(23);
         end.setMinutes(59);
         end.setSeconds(59);
+        console.log(start);
+        console.log(end);
+        Place.find({
+            user_id: user._id
+        }, function(err, data) {
+            console.log(data);
+        });
         var where = {
             user_id: user._id,
             time_start: {
