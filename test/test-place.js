@@ -208,7 +208,7 @@ describe('Log time api put:' + consts.url_place_log_time, function() {
                         country_name: 'thailand'
                     };
                     Place.findOne(where, function(err, data) {
-                        data.spent.should.equal(0.5);
+                        data.spent.should.equal(1);
                         moment(data.time_start).format('YYYY-MM-DDTHH:mm:ss').should.equal('2014-01-01T06:00:00');
                         should.not.exist(data.time_end);
                         cb();
@@ -229,15 +229,13 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 .end(done);
         });
         it('return ' + authorizedError + ' when fake token "123" not correct', function(done) {
-            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'vietnam'))
-                .field("token", "123")
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'vietnam') + "?token=123")
                 .expect('Content-Type', jsonContentType)
                 .expect(authorizedError)
                 .end(done);
         });
         it('return ' + notFoundError + ' when country_name params missing', function(done) {
-            request(app).get(consts.url_place_get_date_spent.replace(':country_name', ''))
-                .field("token", token)
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', '') + "?token=" + token)
                 .expect('Content-Type', jsonContentType)
                 .expect(notFoundError)
                 .end(done);
@@ -273,6 +271,70 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
                     res.body.spent.should.equal(5);
+                    done();
+                });
+        });
+
+        it('return ' + successStatusCode + ' when log thailand 3 times', function(done) {
+            async.each([6, 7, 8], function(item, cb) {
+                Factory.build('place2', function(place) {
+                    request(app).put(consts.url_place_log_time)
+                        .field("token", token)
+                        .field("country_name", place.country_name)
+                        .field("lng", place.lng)
+                        .field("lat", place.lat)
+                        .field("time_start", '2014-01-0' + item + 'T06:00:00')
+                        .field("time_end", '2014-01-0' + item + 'T18:00:00')
+                        .expect(successStatusCode)
+                        .end(function(err, res) {
+                            if (err) console.log(res.body);
+                            res.statusCode.should.equal(successStatusCode);
+                            cb();
+                        });
+                });
+            }, done);
+        });
+
+        it('return ' + successStatusCode + ' and spent = 5 when get spent day of vietnam', function(done) {
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'thailand') + "?token=" + token)
+                .expect('Content-Type', jsonContentType)
+                .expect(successStatusCode)
+                .end(function(err, res) {
+                    res.statusCode.should.equal(successStatusCode);
+                    res.body.spent.should.equal(3);
+                    done();
+                });
+        });
+    });
+});
+
+describe('Get list place and day spent', function() {
+    describe('Invalid parammeters', function() {
+        it('return ' + authorizedError + ' when token param missing', function(done) {
+            request(app).get(consts.url_place_list)
+                .expect('Content-Type', jsonContentType)
+                .expect(authorizedError)
+                .end(done);
+        });
+        it('return ' + authorizedError + ' when fake token "123" not correct', function(done) {
+            request(app).get(consts.url_place_list + "?token=123")
+                .expect('Content-Type', jsonContentType)
+                .expect(authorizedError)
+                .end(done);
+        });
+    });
+    describe('Valid parammeters', function() {
+        it('return ' + successStatusCode + ' and have 2 item when get list place with day spent', function(done) {
+            request(app).get(consts.url_place_list + "?token=" + token)
+                .expect('Content-Type', jsonContentType)
+                .expect(successStatusCode)
+                .end(function(err, res) {
+                    res.statusCode.should.equal(successStatusCode);
+                    res.body.length.should.equal(2);
+                    res.body[0]._id.should.equal('thailand');
+                    res.body[0].spent.should.equal(3);
+                    res.body[1]._id.should.equal('vietnam');
+                    res.body[1].spent.should.equal(5);
                     done();
                 });
         });

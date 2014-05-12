@@ -30,7 +30,7 @@ var PlaceSchema = new Schema({
     },
     spent: {
         type: Number,
-        default: 0
+        default: 1
     },
     time_start: {
         type: Date,
@@ -67,12 +67,6 @@ PlaceSchema.path('country_name').validate(function(countryName) {
  * Pre-save hook
  */
 PlaceSchema.pre('save', function(next) {
-    // check if time_end is null, we calc 0.5 day
-    if (this.time_end) {
-        this.spent = 1;
-    } else {
-        this.spent = 0.5;
-    }
     this.dateUpdated = Date.now();
     next();
 });

@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
 module.exports = function(app) {
 
     /**
-     * Api request log time for user location.
+     * API request log time for user location.
+     *
      * Request params:
      * 	- token: 		user token
      * 	- lng: 			location lng value
@@ -19,6 +20,11 @@ module.exports = function(app) {
      * 	- country_name: country name
      * 	- time_start:	time start in date
      *  - time_end:     time end in date
+     *
+     * Response:
+     *  - return 409 MissingParameterError  when country_name, time_start param missing or not correct format
+     *  - return 403 NotAuthorizedError     when token param missing or not correct
+     *  - return 200 OK                     when success
      *
      * @param  {[type]}   req  [description]
      * @param  {[type]}   res  [description]
@@ -94,6 +100,23 @@ module.exports = function(app) {
         });
     }
 
+    /**
+     * API get day spent of place in this year
+     *
+     * Request params:
+     *  - token:        user token
+     *  - country_name: country name
+     *
+     * Response:
+     *  - return 409 MissingParameterError  when country_name param missing
+     *  - return 403 NotAuthorizedError     when token param missing or not correct
+     *  - return 200 OK                     when success
+     *
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} next [description]
+     * @return {[type]}        [description]
+     */
     function getDateSpent(req, res, next) {
         var user = req.user;
         var countryName = req.params.country_name;
@@ -135,14 +158,27 @@ module.exports = function(app) {
 
     }
 
+    /**
+     * API get list place with day spent
+     *
+     * Request params:
+     *  - token:        user token
+     *
+     * Response:
+     *  - return 403 NotAuthorizedError     when token param missing or not correct
+     *  - return 200 OK                     when success
+     *
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} next [description]
+     * @return {[type]}        [description]
+     */
     function list(req, res, next) {
         var user = req.user;
         var year = new Date().getFullYear();
         // init start day, end day of year
         var start = moment(year + '-01-01T00:00:00').toDate();
         var end = moment(year + '-12-31T23:59:59').toDate();
-        console.log(start);
-        console.log(end);
         var where = {
             user_id: user._id,
             time_start: {
@@ -156,6 +192,9 @@ module.exports = function(app) {
                 _id: '$country_name',
                 spent: {
                     $sum: '$spent'
+                },
+                date: {
+                    $push: '$time_start'
                 }
             })
             .exec(function(err, value) {

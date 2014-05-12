@@ -60,9 +60,4 @@ module.exports = function(app, sessionKey) {
         // respond with 500 "Internal Server Error".
         res.send(500, "Server has error, please contact Administrator");
     });
-    app.on('after', function(req, res, route, err) {
-        if (err) {
-            console.error(err.stack);
-        }
-    });
 };
