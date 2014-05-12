@@ -63,17 +63,11 @@ module.exports = function(app) {
         start.hour(0);
         start.minute(0);
         start.second(0);
-        start.zone("+02:00");
         // set end is 23:59:59 of day
         var end = timeStart.clone();
         end.hour(23);
         end.minute(59);
         end.second(59);
-        end.zone("+02:00");
-        console.log('start: ' + start.toDate());
-        console.log('end: ' + end.toDate());
-        console.log('start moment: ' + start);
-        console.log('end moment: ' + end);
 
         // condition query is user_id, country_name, and start_time between start and end
         var where = {
@@ -100,7 +94,7 @@ module.exports = function(app) {
                 data.time_end = timeEnd.toDate();
                 data.save(function(err, data) {
                     next.ifError(err);
-                    res.send(200);
+                    res.send(200, data);
                 });
             }
         });
@@ -188,7 +182,6 @@ module.exports = function(app) {
         start.hour(0);
         start.minute(0);
         start.second(0);
-        start.zone("+02:00");
 
         // init end day is end date of year
         var end = moment();
@@ -197,14 +190,6 @@ module.exports = function(app) {
         end.hour(23);
         end.minute(59);
         end.second(59);
-        end.zone("+02:00");
-        console.log('start: ' + start.toDate());
-        console.log('end: ' + end.toDate());
-        Place.find({
-            user_id: user._id
-        }, function(err, data) {
-            console.log(data);
-        });
         var where = {
             user_id: user._id,
             time_start: {
