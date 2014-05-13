@@ -46,7 +46,7 @@ module.exports = {
             version: '0.0.1'
         },
         host: 'localhost',
-        port: '8080',
+        port: '8083',
         db_prefix: 'mongodb',
         db_port: '27017',
         db_database: 'iwander-pro',
