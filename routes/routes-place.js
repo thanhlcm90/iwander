@@ -191,6 +191,7 @@ module.exports = function(app) {
         end.hour(23);
         end.minute(59);
         end.second(59);
+        // we will find all documents in Place collection in current year
         var where = {
             user_id: user._id,
             time_start: {
@@ -198,7 +199,7 @@ module.exports = function(app) {
                 $lte: end.toDate()
             }
         };
-
+        // find and sort by time_start (asc)
         Place.find()
             .where(where)
             .sort({
@@ -213,6 +214,7 @@ module.exports = function(app) {
                     var countryName = value[0].country_name;
                     var firstTime = value[0].time_start;
                     result[countryName] = [];
+                    // first log country is not israel, we consider have 1 day in israel
                     if (countryName.toLowerCase() !== 'israel') {
                         result['israel'] = [];
                         result['israel'].push(firstTime);
@@ -223,6 +225,7 @@ module.exports = function(app) {
                     for (i = 1; i < value.length; i++) {
                         // get days diff between two date
                         var diff = Math.abs(moment(firstTime).diff(value[i].time_start, 'days'));
+                        // check if result has object with key is country name
                         if (!result[value[i].country_name]) {
                             result[value[i].country_name] = [];
                         }
@@ -232,10 +235,11 @@ module.exports = function(app) {
                             addDateRange(firstTime, value[i].time_start, result[countryName]);
                         }
                         // add current country_name
-                        // check if countryName is israel, then push previous country is israel
+                        // check if previous country is israel, then push previous country
                         if (countryName.toLowerCase() === 'israel') {
                             result[countryName].push(value[i].time_start);
                         } else {
+                            // push current country
                             result[value[i].country_name].push(value[i].time_start);
                         }
                         countryName = value[i].country_name;
