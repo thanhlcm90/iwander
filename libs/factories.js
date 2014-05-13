@@ -22,7 +22,7 @@ Factory.define('place1', Place, {
     lat: 123.234123,
 });
 Factory.define('place2', Place, {
-    country_name: 'thailand',
+    country_name: 'israel',
     lng: 123.123,
     lat: 123.234123,
     time: moment('2014-04-01T18:00:00')

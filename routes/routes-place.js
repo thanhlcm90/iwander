@@ -213,7 +213,12 @@ module.exports = function(app) {
                     var countryName = value[0].country_name;
                     var firstTime = value[0].time_start;
                     result[countryName] = [];
-                    result[countryName].push(firstTime);
+                    if (countryName.toLowerCase() !== 'israel') {
+                        result['israel'] = [];
+                        result['israel'].push(firstTime);
+                    } else {
+                        result[countryName].push(firstTime);
+                    }
                     // for each value
                     for (i = 1; i < value.length; i++) {
                         // get days diff between two date
@@ -227,7 +232,12 @@ module.exports = function(app) {
                             addDateRange(firstTime, value[i].time_start, result[countryName]);
                         }
                         // add current country_name
-                        result[value[i].country_name].push(value[i].time_start);
+                        // check if countryName is israel, then push previous country is israel
+                        if (countryName.toLowerCase() === 'israel') {
+                            result[countryName].push(value[i].time_start);
+                        } else {
+                            result[value[i].country_name].push(value[i].time_start);
+                        }
                         countryName = value[i].country_name;
                         firstTime = value[i].time_start;
                     }

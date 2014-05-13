@@ -175,14 +175,14 @@ describe('Log time api put:' + consts.url_place_log_time, function() {
                     });
             });
         });
-        it('return ' + successStatusCode + ' when log thailand time_start 2014-01-01T06:00:00 success', function(done) {
+        it('return ' + successStatusCode + ' when log israel time_start 2014-01-01T06:00:00 success', function(done) {
             Factory.build('place2', function(place) {
                 request(app).put(consts.url_place_log_time)
                     .field("token", token)
                     .field("country_name", place.country_name)
                     .field("lng", place.lng)
                     .field("lat", place.lat)
-                    .field("time_start", "2014-01-01T06:00:00")
+                    .field("time_start", "2014-01-02T06:00:00")
                     .expect(successStatusCode)
                     .end(function(err, res) {
                         if (err) console.log(res.body);
@@ -205,11 +205,11 @@ describe('Log time api put:' + consts.url_place_log_time, function() {
                 function(cb) {
                     // check spent equal 0.5, time_start must correct, time_end must null
                     var where = {
-                        country_name: 'thailand'
+                        country_name: 'israel'
                     };
                     Place.findOne(where, function(err, data) {
                         data.spent.should.equal(1);
-                        moment(data.time_start).format('YYYY-MM-DDTHH:mm:ss').should.equal('2014-01-01T06:00:00');
+                        moment(data.time_start).format('YYYY-MM-DDTHH:mm:ss').should.equal('2014-01-02T06:00:00');
                         should.not.exist(data.time_end);
                         cb();
                     });
@@ -246,7 +246,7 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
             Place.remove(done);
         });
         it('return ' + successStatusCode + ' when log vietnam', function(done) {
-            async.each([1, 3, 5], function(item, cb) {
+            async.each([1, 3, 7], function(item, cb) {
                 Factory.build('place1', function(place) {
                     request(app).put(consts.url_place_log_time)
                         .field("token", token)
@@ -265,16 +265,16 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
             }, done);
         });
 
-        it('return ' + successStatusCode + ' when log thailand', function(done) {
-            async.each([7, 9], function(item, cb) {
+        it('return ' + successStatusCode + ' when log israel', function(done) {
+            async.each([4, 11, 26], function(item, cb) {
                 Factory.build('place2', function(place) {
                     request(app).put(consts.url_place_log_time)
                         .field("token", token)
                         .field("country_name", place.country_name)
                         .field("lng", place.lng)
                         .field("lat", place.lat)
-                        .field("time_start", '2014-01-0' + item + 'T06:00:00+0000')
-                        .field("time_end", '2014-01-0' + item + 'T18:00:00+0000')
+                        .field("time_start", '2014-01-' + (item < 10 ? '0' + item : item) + 'T06:00:00+0000')
+                        .field("time_end", '2014-01-' + (item < 10 ? '0' + item : item) + 'T18:00:00+0000')
                         .expect(successStatusCode)
                         .end(function(err, res) {
                             if (err) console.log(res.body);
@@ -286,7 +286,7 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
         });
 
         it('return ' + successStatusCode + ' when log china', function(done) {
-            async.each([11, 15], function(item, cb) {
+            async.each([18, 20, 22], function(item, cb) {
                 Factory.build('place3', function(place) {
                     request(app).put(consts.url_place_log_time)
                         .field("token", token)
@@ -304,24 +304,24 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 });
             }, done);
         });
-        it('return ' + successStatusCode + ' and spent = 6 when get spent day of vietnam', function(done) {
+        it('return ' + successStatusCode + ' and spent = 5 when get spent day of vietnam', function(done) {
             request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'vietnam') + "?token=" + token)
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
-                    res.body.spent.should.equal(6);
+                    res.body.spent.should.equal(5);
                     done();
                 });
         });
 
-        it('return ' + successStatusCode + ' and spent = 3 when get spent day of thailand', function(done) {
-            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'thailand') + "?token=" + token)
+        it('return ' + successStatusCode + ' and spent = 14 when get spent day of israel', function(done) {
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'israel') + "?token=" + token)
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
-                    res.body.spent.should.equal(4);
+                    res.body.spent.should.equal(14);
                     done();
                 });
         });
@@ -332,7 +332,7 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 .expect(successStatusCode)
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
-                    res.body.spent.should.equal(5);
+                    res.body.spent.should.equal(7);
                     done();
                 });
         });
@@ -363,11 +363,11 @@ describe('Get list place and day spent', function() {
                     res.statusCode.should.equal(successStatusCode);
                     res.body.length.should.equal(3);
                     res.body[0]._id.should.equal('vietnam');
-                    res.body[0].spent.should.equal(6);
-                    res.body[1]._id.should.equal('thailand');
-                    res.body[1].spent.should.equal(4);
+                    res.body[0].spent.should.equal(5);
+                    res.body[1]._id.should.equal('israel');
+                    res.body[1].spent.should.equal(14);
                     res.body[2]._id.should.equal('china');
-                    res.body[2].spent.should.equal(5);
+                    res.body[2].spent.should.equal(7);
                     done();
                 });
         });
