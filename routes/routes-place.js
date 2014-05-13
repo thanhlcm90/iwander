@@ -51,6 +51,7 @@ module.exports = function(app) {
         } else {
             return next(new restify.InvalidArgumentError('time_start cannot be blank'));
         }
+        countryName = countryName.trim().toLowerCase();
         if (!validator.isNull(timeEnd) && moment(timeEnd).isValid()) {
             // convert to javascript Date type
             timeEnd = moment(timeEnd);
@@ -128,6 +129,7 @@ module.exports = function(app) {
         if (validator.isNull(countryName)) {
             return next(new restify.InvalidArgumentError('country_name cannot be blank'));
         }
+        countryName = countryName.trim().toLowerCase();
 
         getListPlace(req, function(err, place) {
             next.ifError(err);
