@@ -1,5 +1,5 @@
 // load configurations for each mode, default is development
-var env = process.env.NODE_ENV || 'development',
+var env = process.env.NODE_ENV || 'production',
     config = require('./config/config').init(env);
 
 // dependencies
