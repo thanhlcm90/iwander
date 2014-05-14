@@ -257,138 +257,161 @@ module.exports = function(app) {
                 }
             });
         };
-        async.eachSeries(obj, iteration, function(err, data) {
-
-        });
-    }
-}
-
-/**
- * API get day spent of place in this year
- *
- * Request params:
- *  - token:        user token
- *  - country_name: country name
- *
- * Response:
- *  - return 409 MissingParameterError  when country_name param missing
- *  - return 403 NotAuthorizedError     when token param missing or not correct
- *  - return 200 OK                     when success
- *
- * @param  {[type]}   req  [description]
- * @param  {[type]}   res  [description]
- * @param  {Function} next [description]
- * @return {[type]}        [description]
- */
-function getDateSpent(req, res, next) {
-    var user = req.user;
-    var countryName = req.params.country_name;
-    if (validator.isNull(countryName)) {
-        return next(new restify.InvalidArgumentError('country_name cannot be blank'));
     }
 
-    // init start day is begin date of year
-    var start = moment();
-    start.month(0);
-    start.date(1);
-    start.hour(0);
-    start.minute(0);
-    start.second(0);
 
-    // init end day is end date of year
-    var end = moment();
-    end.month(11);
-    end.date(31);
-    end.hour(23);
-    end.minute(59);
-    end.second(59);
-
-    var where = {
-        user_id: user._id,
-        country_name: countryName.toLowerCase(),
-        time_start: {
-            $gte: start.toDate(),
-            $lte: end.toDate()
+    /**
+     * API get day spent of place in this year
+     *
+     * Request params:
+     *  - token:        user token
+     *  - country_name: country name
+     *
+     * Response:
+     *  - return 409 MissingParameterError  when country_name param missing
+     *  - return 403 NotAuthorizedError     when token param missing or not correct
+     *  - return 200 OK                     when success
+     *
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} next [description]
+     * @return {[type]}        [description]
+     */
+    function getDateSpent(req, res, next) {
+        var user = req.user;
+        var countryName = req.params.country_name;
+        if (validator.isNull(countryName)) {
+            return next(new restify.InvalidArgumentError('country_name cannot be blank'));
         }
-    };
-    Place.aggregate()
-        .match(where)
-        .group({
-            _id: '$country_name',
-            spentSum: {
-                $sum: '$spent'
+
+        // init start day is begin date of year
+        var start = moment();
+        start.month(0);
+        start.date(1);
+        start.hour(0);
+        start.minute(0);
+        start.second(0);
+
+        // init end day is end date of year
+        var end = moment();
+        end.month(11);
+        end.date(31);
+        end.hour(23);
+        end.minute(59);
+        end.second(59);
+
+        var where = {
+            user_id: user._id,
+            country_name: countryName.toLowerCase(),
+            time_start: {
+                $gte: start.toDate(),
+                $lte: end.toDate()
             }
-        })
-        .exec(function(err, value) {
-            next.ifError(err);
-            var spent = 0;
-            if (value && value.length > 0) {
-                spent = value[0].spentSum;
-            }
-            res.send(200, {
-                _id: countryName,
-                spent: spent
+        };
+        Place.aggregate()
+            .match(where)
+            .group({
+                _id: '$country_name',
+                spentSum: {
+                    $sum: '$spent'
+                }
+            })
+            .exec(function(err, value) {
+                next.ifError(err);
+                var spent = 0;
+                if (value && value.length > 0) {
+                    spent = value[0].spentSum;
+                }
+                res.send(200, {
+                    _id: countryName,
+                    spent: spent
+                });
             });
-        });
-}
+    }
 
-/**
- * API get list place with day spent
- *
- * Request params:
- *  - token:        user token
- *
- * Response:
- *  - return 403 NotAuthorizedError     when token param missing or not correct
- *  - return 200 OK                     when success
- *
- * @param  {[type]}   req  [description]
- * @param  {[type]}   res  [description]
- * @param  {Function} next [description]
- * @return {[type]}        [description]
- */
-function list(req, res, next) {
-    var user = req.user;
-    // init start day is begin date of year
-    var start = moment();
-    start.month(0);
-    start.date(1);
-    start.hour(0);
-    start.minute(0);
-    start.second(0);
+    /**
+     * API get list place with day spent
+     *
+     * Request params:
+     *  - token:        user token
+     *
+     * Response:
+     *  - return 403 NotAuthorizedError     when token param missing or not correct
+     *  - return 200 OK                     when success
+     *
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} next [description]
+     * @return {[type]}        [description]
+     */
+    function list(req, res, next) {
+        var user = req.user;
+        // init start day is begin date of year
+        var start = moment();
+        start.month(0);
+        start.date(1);
+        start.hour(0);
+        start.minute(0);
+        start.second(0);
 
-    // init end day is end date of year
-    var end = moment();
-    end.month(11);
-    end.date(31);
-    end.hour(23);
-    end.minute(59);
-    end.second(59);
-    var where = {
-        user_id: user._id,
-        time_start: {
-            $gte: start.toDate(),
-            $lte: end.toDate()
-        }
-    };
-    Place.aggregate()
-        .match(where)
-        .group({
-            _id: '$country_name',
-            spent: {
-                $sum: '$spent'
-            },
-            date: {
-                $push: '$time_start'
+        // init end day is end date of year
+        var end = moment();
+        end.month(11);
+        end.date(31);
+        end.hour(23);
+        end.minute(59);
+        end.second(59);
+        var where = {
+            user_id: user._id,
+            time_start: {
+                $gte: start.toDate(),
+                $lte: end.toDate()
             }
-        })
-        .exec(function(err, value) {
-            next.ifError(err);
-            res.send(200, value);
-        });
-}
+        };
+        Place.aggregate()
+            .match(where)
+            .sort({
+                time_start: 1
+            })
+            .group({
+                _id: '$country_name',
+                spent: {
+                    $sum: '$spent'
+                },
+                date: {
+                    $push: '$time_start'
+                }
+            })
+            .exec(function(err, value) {
+                next.ifError(err);
+                res.send(200, value);
+            });
+    }
 
-app.put(consts.url_place_log_time, logTime);
-app.get(consts.url_place_get_date_spent, getDateSpent);
-app.get(consts.url_place_list, list);
+    function getMissingDate(value) {
+        // check if value is array and length must large than 0
+        if (value && Array.isArray(value) && value.length > 0) {
+            var result = [];
+            var v;
+            // for each value
+            for (v in value) {
+                // check if attr date of value is array and length must large than 0
+                if (Array.isArray(v.date) && v.date.length > 0) {
+                    var i;
+                    // for from 1 to length -1
+                    for (i = 1; i < v.date.length; i++) {
+                        // compare diffirent date from i and i-1
+                        var diff = moment(v.date[i].diff(v.date[i - 1], 'days'))
+                        console.log(v.date[i] + ' - ' + v.date[i - 1] + ' -> ' + diff);
+                    }
+                }
+            }
+        } else {
+            return value;
+        }
+    }
+
+    app.put(consts.url_place_log_time, logTime);
+    app.get(consts.url_place_get_date_spent, getDateSpent);
+    app.get(consts.url_place_list, list);
 };
