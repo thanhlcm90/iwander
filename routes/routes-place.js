@@ -199,6 +199,9 @@ module.exports = function(app) {
         };
         Place.aggregate()
             .match(where)
+            .sort({
+                time_start: 1
+            })
             .group({
                 _id: '$country_name',
                 spent: {
@@ -210,8 +213,32 @@ module.exports = function(app) {
             })
             .exec(function(err, value) {
                 next.ifError(err);
+                getMissingDate(value);
                 res.send(200, value);
             });
+    }
+
+    function getMissingDate(value) {
+        // check if value is array and length must large than 0
+        if (value && Array.isArray(value) && value.length > 0) {
+            var result = [];
+            var v;
+            // for each value
+            for (v in value) {
+                // check if attr date of value is array and length must large than 0
+                if (Array.isArray(v.date) && v.date.length > 0) {
+                    var i;
+                    // for from 1 to length -1
+                    for (i = 1; i < v.date.length; i++) {
+                        // compare diffirent date from i and i-1
+                        var diff = moment(v.date[i].diff(v.date[i - 1], 'days'))
+                        console.log(v.date[i] + ' - ' + v.date[i - 1] + ' -> ' + diff);
+                    }
+                }
+            }
+        } else {
+            return value;
+        }
     }
 
     app.put(consts.url_place_log_time, logTime);
