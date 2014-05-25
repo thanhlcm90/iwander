@@ -18,6 +18,7 @@
             "longjohn": "latest",
             "toobusy": "latest",
             "moment": "latest",
+            "moment-timezone": "latest",
             "forever": "latest",
             "async": "latest",
             "factory-lady": "latest",

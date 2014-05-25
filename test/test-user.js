@@ -252,10 +252,10 @@ describe('Login api post:' + consts.url_user_login, function() {
 
 describe('Get user info api get:' + consts.url_user_get, function() {
     describe("Invalid paramters", function() {
-        it('return ' + notFoundError + ' when token missing', function(done) {
+        it('return ' + authorizedError + ' when token missing', function(done) {
             request(app).get(consts.url_user_get.replace(':token', ''))
                 .expect('Content-Type', jsonContentType)
-                .expect(notFoundError)
+                .expect(authorizedError)
                 .end(done);
         });
         it('return ' + authorizedError + ' when fake token "123ABC" not correct', function(done) {
@@ -277,10 +277,10 @@ describe('Get user info api get:' + consts.url_user_get, function() {
 
 describe('Update user api put:' + consts.url_user_update, function() {
     describe('Invalid parameters', function() {
-        it('return ' + notFoundError + ' when token missing', function(done) {
+        it('return ' + authorizedError + ' when token missing', function(done) {
             request(app).put(consts.url_user_update)
                 .expect('Content-Type', jsonContentType)
-                .expect(notFoundError)
+                .expect(authorizedError)
                 .end(done)
         });
         it('return ' + authorizedError + ' when fake token "123ABC" not correct', function(done) {

@@ -33,11 +33,7 @@ var PlaceSchema = new Schema({
         default: 1
     },
     time_start: {
-        type: Date,
-        default: Date.now
-    },
-    time_end: {
-        type: Date
+        type: String
     },
     dateCreated: {
         type: Date,

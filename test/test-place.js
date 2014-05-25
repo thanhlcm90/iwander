@@ -69,44 +69,6 @@ describe('Log time api put:' + consts.url_place_log_time, function() {
                     .end(done);
             });
         });
-        it('return ' + validationError + ' when time_start param missing', function(done) {
-            Factory.build('place1', function(place) {
-                request(app).put(consts.url_place_log_time)
-                    .field("token", token)
-                    .field("country_name", place.country_name)
-                    .field("lng", place.lng)
-                    .field("lat", place.lat)
-                    .expect('Content-Type', jsonContentType)
-                    .expect(validationError)
-                    .end(done);
-            });
-        });
-        it('return ' + validationError + ' when time_start format is not correct', function(done) {
-            Factory.build('place1', function(place) {
-                request(app).put(consts.url_place_log_time)
-                    .field("token", token)
-                    .field("country_name", place.country_name)
-                    .field("lng", place.lng)
-                    .field("lat", place.lat)
-                    .field("time_start", "2014-99-99T06:00:00")
-                    .expect('Content-Type', jsonContentType)
-                    .expect(validationError)
-                    .end(done);
-            });
-        });
-        it('return ' + validationError + ' when time_end format is not correct', function(done) {
-            Factory.build('place1', function(place) {
-                request(app).put(consts.url_place_log_time)
-                    .field("token", token)
-                    .field("country_name", place.country_name)
-                    .field("lng", place.lng)
-                    .field("lat", place.lat)
-                    .field("time_end", "2014-99-99T06:00:00")
-                    .expect('Content-Type', jsonContentType)
-                    .expect(validationError)
-                    .end(done);
-            });
-        });
         it('should not save place to database', function(done) {
             Place.count(function(err, cnt) {
                 cnt.should.equal(0);
@@ -124,7 +86,6 @@ describe('Log time api put:' + consts.url_place_log_time, function() {
                     .field("lng", place.lng)
                     .field("lat", place.lat)
                     .field("time_start", "2014-01-01T06:00:00")
-                    .field("time_end", "2014-01-01T18:00:00")
                     .expect(successStatusCode)
                     .end(function(err, res) {
                         if (err) console.log(res.body);
@@ -150,8 +111,6 @@ describe('Log time api put:' + consts.url_place_log_time, function() {
                     };
                     Place.findOne(where, function(err, data) {
                         data.spent.should.equal(1);
-                        moment(data.time_start).format('YYYY-MM-DDTHH:mm:ss').should.equal('2014-01-01T06:00:00');
-                        moment(data.time_end).format('YYYY-MM-DDTHH:mm:ss').should.equal('2014-01-01T18:00:00');
                         cb();
                     });
                 },
@@ -166,7 +125,6 @@ describe('Log time api put:' + consts.url_place_log_time, function() {
                     .field("lng", place.lng)
                     .field("lat", place.lat)
                     .field("time_start", "2014-01-01T08:00:00")
-                    .field("time_end", "2014-01-01T18:00:00")
                     .expect(successStatusCode)
                     .end(function(err, res) {
                         if (err) console.log(res.body);
@@ -209,8 +167,6 @@ describe('Log time api put:' + consts.url_place_log_time, function() {
                     };
                     Place.findOne(where, function(err, data) {
                         data.spent.should.equal(1);
-                        moment(data.time_start).format('YYYY-MM-DDTHH:mm:ss').should.equal('2014-01-02T06:00:00');
-                        should.not.exist(data.time_end);
                         cb();
                     });
                 },
@@ -234,10 +190,10 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 .expect(authorizedError)
                 .end(done);
         });
-        it('return ' + notFoundError + ' when country_name params missing', function(done) {
+        it('return ' + validationError + ' when country_name params missing', function(done) {
             request(app).get(consts.url_place_get_date_spent.replace(':country_name', '') + "?token=" + token)
                 .expect('Content-Type', jsonContentType)
-                .expect(notFoundError)
+                .expect(validationError)
                 .end(done);
         });
     });
@@ -254,7 +210,6 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                         .field("lng", place.lng)
                         .field("lat", place.lat)
                         .field("time_start", '2014-01-0' + item + 'T06:00:00+0000')
-                        .field("time_end", '2014-01-0' + item + 'T18:00:00+0000')
                         .expect(successStatusCode)
                         .end(function(err, res) {
                             if (err) console.log(res.body);
@@ -274,7 +229,6 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                         .field("lng", place.lng)
                         .field("lat", place.lat)
                         .field("time_start", '2014-01-' + (item < 10 ? '0' + item : item) + 'T06:00:00+0000')
-                        .field("time_end", '2014-01-' + (item < 10 ? '0' + item : item) + 'T18:00:00+0000')
                         .expect(successStatusCode)
                         .end(function(err, res) {
                             if (err) console.log(res.body);
@@ -294,7 +248,6 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                         .field("lng", place.lng)
                         .field("lat", place.lat)
                         .field("time_start", '2014-01-' + item + 'T06:00:00+0000')
-                        .field("time_end", '2014-01-' + item + 'T18:00:00+0000')
                         .expect(successStatusCode)
                         .end(function(err, res) {
                             if (err) console.log(res.body);

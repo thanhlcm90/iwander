@@ -5,9 +5,10 @@ var mongoose = require('mongoose'),
     ObjectId = mongoose.Types.ObjectId,
     restify = require('restify'),
     async = require('async'),
-    moment = require('moment'),
+    moment = require('moment-timezone'),
     validator = require('validator'),
-    consts = require(__config_path + "/consts");
+    consts = require(__config_path + "/consts"),
+    israelTimezone = "Asia/Jerusalem";
 
 module.exports = function(app) {
 
@@ -38,28 +39,24 @@ module.exports = function(app) {
         var lng = req.params.lng;
         var lat = req.params.lat;
         var countryName = req.params.country_name;
+        // get current time and convert it to israel time zone
         var timeStart = req.params.time_start;
-        var timeEnd = req.params.time_end;
-        // check validate param time
         if (!validator.isNull(timeStart)) {
             if (moment(timeStart).isValid()) {
                 // convert to javascript Date type
-                timeStart = moment(timeStart);
+                timeStart = moment(timeStart).tz(israelTimezone);
             } else {
                 return next(new restify.InvalidArgumentError('time_start is not date time'));
             }
         } else {
-            return next(new restify.InvalidArgumentError('time_start cannot be blank'));
-        }
-        countryName = countryName.trim().toLowerCase();
-        if (!validator.isNull(timeEnd) && moment(timeEnd).isValid()) {
-            // convert to javascript Date type
-            timeEnd = moment(timeEnd);
+            timeStart = moment().tz(israelTimezone);
         }
         // check validate param country_name
         if (validator.isNull(countryName)) {
             return next(new restify.InvalidArgumentError('country_name cannot be blank'));
         }
+        // trim and lower
+        countryName = countryName.trim().toLowerCase();
         // Set start is 00:00:00 of day
         var start = timeStart.clone();
         start.hour(0);
@@ -76,8 +73,8 @@ module.exports = function(app) {
             user_id: user._id,
             country_name: countryName,
             time_start: {
-                $gte: start.toDate(),
-                $lte: end.toDate()
+                $gte: start.format(),
+                $lte: end.format()
             }
         };
         Place.findOne(where, function(err, data) {
@@ -93,10 +90,7 @@ module.exports = function(app) {
                 // if exits, save change lng, lat, time_start, time_end
                 data.lng = lng;
                 data.lat = lat;
-                data.time_start = timeStart.toDate();
-                if (timeEnd) {
-                    data.time_end = timeEnd.toDate();
-                }
+                data.time_start = timeStart.format();
                 data.save(function(err, data) {
                     next.ifError(err);
                     res.send(200, data);
@@ -107,7 +101,7 @@ module.exports = function(app) {
 
 
     /**
-     * API get day spent of place in this year
+     * API get day spent of one place in this year
      *
      * Request params:
      *  - token:        user token
@@ -170,16 +164,19 @@ module.exports = function(app) {
     }
 
     /**
-     * [getListPlace description]
+     * Get list place and day spent in current year.
+     * Calc day spent using method 1
+     *
      * @param  {[type]} req request
      * @param {@function} callback function(err, placeList)
      * @return {[type]}
      */
     function getListPlace(req, callback) {
 
+        var i;
         var user = req.user;
         // init start day is begin date of year
-        var start = moment();
+        var start = moment().tz(israelTimezone);
         start.month(0);
         start.date(1);
         start.hour(0);
@@ -187,7 +184,7 @@ module.exports = function(app) {
         start.second(0);
 
         // init end day is end date of year
-        var end = moment();
+        var end = moment().tz(israelTimezone);
         end.month(11);
         end.date(31);
         end.hour(23);
@@ -197,8 +194,8 @@ module.exports = function(app) {
         var where = {
             user_id: user._id,
             time_start: {
-                $gte: start.toDate(),
-                $lte: end.toDate()
+                $gte: start.format(),
+                $lte: end.format()
             }
         };
         // find and sort by time_start (asc)
@@ -212,9 +209,9 @@ module.exports = function(app) {
                 // check if value is array and length must large than 0
                 var result = {};
                 if (value && Array.isArray(value) && value.length > 0) {
-                    var i;
                     var countryName = value[0].country_name;
-                    var firstTime = value[0].time_start;
+                    // get first value time zone, convert it to israel time zone
+                    var firstTime = moment(value[0].time_start).tz(israelTimezone);
                     result[countryName] = [];
                     // first log country is not israel, we consider have 1 day in israel
                     if (countryName.toLowerCase() !== 'israel') {
@@ -225,37 +222,43 @@ module.exports = function(app) {
                     }
                     // for each value
                     for (i = 1; i < value.length; i++) {
+                        // get current time of value i, convert it to israel time zone
+                        var currentTime = moment(value[i].time_start).tz(israelTimezone);
                         // get days diff between two date
-                        var diff = Math.abs(moment(firstTime).diff(value[i].time_start, 'days'));
-                        // check if result has object with key is country name
+                        var diff = Math.abs(firstTime.diff(currentTime, 'days'));
+                        // result hasn't object with key is country name, create one with array null
                         if (!result[value[i].country_name]) {
                             result[value[i].country_name] = [];
                         }
                         // check if diff time between previous time_start and now time_start
                         // diff > 1, add missing date is previous country_name
                         if (diff > 1) {
-                            addDateRange(firstTime, value[i].time_start, result[countryName]);
+                            addDateRange(firstTime, currentTime, result[countryName]);
                         }
                         // add current country_name
                         // check if previous country is israel, then push previous country
                         if (countryName.toLowerCase() === 'israel') {
-                            result[countryName].push(value[i].time_start);
+                            result[countryName].push(currentTime);
                         } else {
                             // push current country
-                            result[value[i].country_name].push(value[i].time_start);
+                            result[value[i].country_name].push(currentTime);
                         }
                         countryName = value[i].country_name;
-                        firstTime = value[i].time_start;
+                        firstTime = currentTime;
                     }
                 }
                 // convert object to array
                 var places = Object.keys(result);
                 var array = [];
                 places.forEach(function(place) {
+                    var arrayTime = [];
+                    for (i = 0; i < result[place].length; i++) {
+                        arrayTime.push(result[place][i].format());
+                    }
                     var item = {
                         _id: place,
                         spent: result[place].length,
-                        date: result[place]
+                        date: arrayTime
                     }
                     array.push(item);
                 });
@@ -270,9 +273,11 @@ module.exports = function(app) {
      * @param {[type]} array
      */
     function addDateRange(start, end, array) {
-        var st = moment(start).add('days', 1);
+        // add one day to start time
+        var st = start.add('days', 1);
+        // check after add one day, day before end times
         while (st.isBefore(end)) {
-            array.push(st.clone().toDate());
+            array.push(st.clone());
             st.add('days', 1);
         }
     }
