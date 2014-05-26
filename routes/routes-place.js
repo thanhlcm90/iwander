@@ -127,12 +127,18 @@ module.exports = function(app) {
 
         getListPlace(req, function(err, place) {
             next.ifError(err);
+            // create array filter with condition is country name
             place = place.filter(function(item) {
                 return item._id === countryName;
             });
+            //  get day spent of country
             var spent = 0;
             if (place && place.length > 0) {
                 spent = place[0].spent;
+            }
+            // country is israel, add israelSpentDay in user
+            if (countryName === 'israel') {
+                spent += user.israel_spent_day;
             }
             res.send(200, {
                 _id: countryName,
@@ -163,9 +169,54 @@ module.exports = function(app) {
         })
     }
 
+    function updateIsraelDay(req, res, next) {
+        var user = req.user;
+        var israelSpentDay = req.params.israelSpentDay;
+        if (!validator.isNumeric(israelSpentDay)) {
+            return next(new restify.InvalidArgumentError("spentDay must be a number"));
+        }
+        user.israel_spent_day = israelSpentDay;
+        user.save(function(err, data) {
+            if (err) console.log(err);
+            next.ifError(err);
+            res.send(200);
+            next();
+        });
+    }
+
     /**
      * Get list place and day spent in current year.
      * Calc day spent using method 1
+     *
+     * Take for example a person came from Israel on:
+     *January 1, and returned on January 4
+     *Released on January 7th, returned on January 11
+     *Released on Jan 18, returned in 26 - January
+     *How to calculate how many days the user spends in Israel?
+     *Income tax system:
+     *
+     *Counting the day of departure and the day of return in Israel
+     *That is -
+     *January 1 - Israel (one day)
+     *January 2 to 3 - not Israel
+     *January 4 to January 7 - Israel (four days)
+     *January 8 to 10 - Not Israel
+     *January 11 to 18 - Israel (eight days)
+     *January 19 to 25 - Not Israel
+     *January 26 to 31 - Israel (six days)
+     *Total days in Israel (IRS approach) - 1 + 4 + 8 + 6 = 19
+     *
+     *Standard Method:
+     *
+     *Count only the day entering Israel but the day is considered a day overseas port.
+     *That is -
+     *January 1 to 3 - not Israel
+     *January 4 to 6 - Israel (three days)
+     *January 7 to 10 - Not Israel
+     **January 11 to 17 - Israel (seven days)
+     *January 18 to 25 - Not Israel
+     *January 26 to 31 - Israel (six days)
+     *Total days in Israel - 3 + 7 + 6 = 16 days
      *
      * @param  {[type]} req request
      * @param {@function} callback function(err, placeList)
@@ -285,4 +336,5 @@ module.exports = function(app) {
     app.put(consts.url_place_log_time, logTime);
     app.get(consts.url_place_get_date_spent, getDateSpent);
     app.get(consts.url_place_list, list);
+    app.put(consts.url_place_update_israel_spent_day, updateIsraelDay);
 };

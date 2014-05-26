@@ -15,6 +15,7 @@ module.exports = {
     url_place_get_date_spent: '/api/place/:country_name', // get
     url_place_list: '/api/place', // get
     url_place_log_time_array: '/api/place/array', // put
+    url_place_update_israel_spent_day: '/api/place/israelspentday', // put
     // declare column query
 
     user_column_query: '_id fullname email token dateUpdated dateCreated'

@@ -30,6 +30,10 @@ var UserSchema = new Schema({
         type: String,
         trim: true
     },
+    israel_spent_day: {
+        type: Number,
+        default: 0
+    },
     dateCreated: {
         type: Date,
         default: Date.now
