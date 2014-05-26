@@ -22,9 +22,11 @@ module.exports = function(app) {
         var user = req.user;
         if (validator.isNull(req.params.fullname) && validator.isNull(req.params.password)) {
             return next(new restify.MissingParameterError('fullname or password cannot be blank'));
-        } else if (!validator.isNull(req.params.fullname)) {
+        }
+        if (!validator.isNull(req.params.fullname)) {
             user.fullname = req.params.fullname;
-        } else if (!validator.isNull(req.params.password)) {
+        }
+        if (!validator.isNull(req.params.password)) {
             user.password = req.params.password;
         }
         user.save(function(err, data) {
