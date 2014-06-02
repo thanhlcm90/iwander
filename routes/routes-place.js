@@ -136,10 +136,6 @@ module.exports = function(app) {
             if (place && place.length > 0) {
                 spent = place[0].spent;
             }
-            // country is israel, add israelSpentDay in user
-            if (countryName === 'israel') {
-                spent += user.israel_spent_day;
-            }
             res.send(200, {
                 _id: countryName,
                 spent: spent
@@ -306,9 +302,14 @@ module.exports = function(app) {
                     for (i = 0; i < result[place].length; i++) {
                         arrayTime.push(result[place][i].format());
                     }
+                    var daySpent = result[place].length;
+                    // country is israel, add israelSpentDay in user
+                    if (place === 'israel') {
+                        daySpent += user.israel_spent_day;
+                    }
                     var item = {
                         _id: place,
-                        spent: result[place].length,
+                        spent: daySpent,
                         date: arrayTime
                     }
                     array.push(item);
