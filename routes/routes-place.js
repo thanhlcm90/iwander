@@ -5,9 +5,10 @@ var mongoose = require('mongoose'),
     ObjectId = mongoose.Types.ObjectId,
     restify = require('restify'),
     async = require('async'),
+    rek = require('rekuire'),
     moment = require('moment-timezone'),
     validator = require('validator'),
-    consts = require(__config_path + "/consts"),
+    consts = rek("consts"),
     israelTimezone = "Asia/Jerusalem";
 
 module.exports = function(app) {
@@ -135,6 +136,8 @@ module.exports = function(app) {
             var spent = 0;
             if (place && place.length > 0) {
                 spent = place[0].spent;
+            } else {
+                spent = user.israel_spent_day;
             }
             res.send(200, {
                 _id: countryName,
@@ -161,6 +164,14 @@ module.exports = function(app) {
     function list(req, res, next) {
         getListPlace(req, function(err, place) {
             next.ifError(err);
+            if (place.length === 0) {
+                var item = {
+                    _id: "israel",
+                    spent: user.israel_spent_day,
+                    date: []
+                }
+                place.push(item);
+            }
             res.send(200, place);
         })
     }
@@ -326,9 +337,17 @@ module.exports = function(app) {
      */
     function addDateRange(start, end, array) {
         // add one day to start time
-        var st = start.add('days', 1);
+        var st = start.clone();
+        st.hour(0);
+        st.minute(0);
+        st.second(0);
+        var ed = end.clone();
+        ed.hour(0);
+        ed.minute(0);
+        ed.second(0);
+        st.add('days', 1);
         // check after add one day, day before end times
-        while (st.isBefore(end)) {
+        while (st.isBefore(ed)) {
             array.push(st.clone());
             st.add('days', 1);
         }

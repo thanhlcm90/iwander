@@ -5,7 +5,8 @@ var mongoose = require('mongoose'),
     restify = require('restify'),
     moment = require('moment'),
     validator = require('validator'),
-    consts = require(__config_path + "/consts");
+    rek = require('rekuire'),
+    consts = rek("consts");
 
 module.exports = function(app) {
 

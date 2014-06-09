@@ -1,10 +1,11 @@
 var restify = require('restify'),
     mongoose = require('mongoose'),
+    rek = require('rekuire')
     env = process.env.NODE_ENV || 'development',
-    config = require('./config').get(),
-    auth = require(__config_path + "/authorization"),
+    config = rek('config').get(),
+    auth = rek("authorization"),
     moment = require('moment'),
-    consts = require(__config_path + "/consts");
+    consts = rek("consts");
 var toobusy;
 
 /*
@@ -46,12 +47,12 @@ module.exports = function(app, sessionKey) {
     console.log("os: " + os.platform() + ", " + os.release());
     // having issues on WIndows with nodegyp and toobusy, Windows SDK solution works on some platforms
     // https://github.com/TooTallNate/node-gyp/#installation
-    if (os.platform().indexOf('win') === 0) {
+    /*if (os.platform().indexOf('win') === 0) {
         toobusy = require('toobusy');
         app.use(hookRequestWithBusy);
-    } else {
+    } else {*/
         app.use(hookRequest);
-    }
+    //}
     // handle uncaught exception, return status code 500
     app.on('uncaughtException', function(req, res, route, err) {
         // log it

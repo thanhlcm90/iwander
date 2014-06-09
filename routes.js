@@ -2,8 +2,9 @@
  * Routes module for parsing requests
  */
 var fs = require('fs'),
+  rek = require('rekuire'),
   mongoose = require('mongoose'),
-  config = require(__config_path + "/config").get();
+  config = rek("config").get();
 
 module.exports = function(app) {
   /**
@@ -18,7 +19,7 @@ module.exports = function(app) {
    * @param response
    */
   app.get(/\/public\/?.*/, function(req, res) {
-    var fileStream = fs.createReadStream(config.root + req.url);
+    var fileStream = fs.createReadStream(__base + req.url);
     fileStream.pipe(res);
   });
 
@@ -68,7 +69,7 @@ module.exports = function(app) {
     // ignore .ds_store file in MAC OS
     if (~file.indexOf('.js')) {
       console.log("Loading route " + file);
-      require(__routes_path + '/' + file)(app);
+      rek(file)(app);
     }
   });
 
