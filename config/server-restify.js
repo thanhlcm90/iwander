@@ -1,11 +1,10 @@
 var restify = require('restify'),
-    mongoose = require('mongoose'),
-    rek = require('rekuire')
+    mongoose = require('mongoose')
     env = process.env.NODE_ENV || 'development',
-    config = rek('config').get(),
-    auth = rek("authorization"),
+    config = require('./config').get(),
+    auth = require(__config_path + "/authorization"),
     moment = require('moment'),
-    consts = rek("consts");
+    consts = require(__config_path + "/consts");
 var toobusy;
 
 /*

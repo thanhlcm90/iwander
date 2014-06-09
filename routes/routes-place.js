@@ -5,10 +5,9 @@ var mongoose = require('mongoose'),
     ObjectId = mongoose.Types.ObjectId,
     restify = require('restify'),
     async = require('async'),
-    rek = require('rekuire'),
     moment = require('moment-timezone'),
     validator = require('validator'),
-    consts = rek("consts"),
+    consts = require(__config_path + "/consts"),
     israelTimezone = "Asia/Jerusalem";
 
 module.exports = function(app) {

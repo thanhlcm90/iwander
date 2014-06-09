@@ -5,12 +5,11 @@ var mongoose = require('mongoose'),
     should = chai.should(),
     request = require('supertest'),
     async = require('async'),
-    rek = require('rekuire'),
-    app = rek('server'),
+    app = require('../server'),
     User = mongoose.model('User'),
-    consts = rek("consts"),
+    consts = require("../config/consts"),
     moment = require('moment'),
-    Factory = rek('factories');
+    Factory = require('../libs/factories');
 
 var jsonContentType = 'application/json',
     token = '',

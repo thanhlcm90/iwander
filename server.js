@@ -1,7 +1,6 @@
 // load configurations for each mode, default is development
-var rek = require('rekuire');
 var env = process.env.NODE_ENV || 'production',
-    config = rek('config').init(env);
+    config = require('./config/config').init(env);
 
 // dependencies
 var restify = require('restify'),
@@ -9,9 +8,9 @@ var restify = require('restify'),
     fs = require('fs');
 
 // Paths global
-global.__models_path = 'models';
-global.__config_path = 'config';
-global.__routes_path = 'routes';
+global.__models_path = config.root + '/models';
+global.__config_path = config.root + '/config';
+global.__routes_path = config.root + '/routes';
 
 // setup Database
 var connectStr = process.env.MONGOLAB_URI ||
@@ -52,7 +51,7 @@ fs.readdirSync(__models_path).forEach(function(file) {
     // ignore .ds_store file in MAC OS
     if (~file.indexOf('.js')) {
         console.log("Loading model " + file);
-        rek(file);
+        require(__models_path + '/' + file);
     }
 });
 
@@ -72,10 +71,10 @@ app.on('error', function(err) {
 
 
 // config server, restify settings
-rek('server-restify')(app);
+require(__config_path + '/server-restify')(app);
 
 // config router
-rek('routes')(app);
+require('./routes')(app);
 
 // start the app by listening on <port>
 var port = process.env.PORT || config.port;
