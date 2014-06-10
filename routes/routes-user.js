@@ -12,6 +12,11 @@ module.exports = function(app) {
     /**
      * This method for request update user profile
      *
+     * Params:
+     *  - token:        token authencate
+     *  - fullname:     new user fullname
+     *  - password:     new user password
+     *
      * Response:
      *  - return 404 NotFoundError      when token param missing
      *  - return 403 NotAuthorizedError when token param is missing or not correct
@@ -42,6 +47,9 @@ module.exports = function(app) {
     /**
      * This method for request get user api
      *
+     * Params:
+     *  - token:        token authencate
+     *
      * Response:
      *  - return 404 NotFoundError      when token param missing
      *  - return 403 NotAuthorizedError when token param is missing or not correct
@@ -58,6 +66,11 @@ module.exports = function(app) {
 
     /**
      * This method for register new user api
+     *
+     * Params:
+     *  - email:        user email
+     *  - fullname:     user fullname
+     *  - password:     user password
      *
      * Response:
      *  - return 500 InternalError  when email, password param missing or not correct format
@@ -110,6 +123,12 @@ module.exports = function(app) {
      *
      * We will check email & password, if it correct, check token. If token exists, return current token
      * If token not exists, generate a new token
+     *
+     * Method: POST
+     *
+     * Params:
+     *  - email:        user email
+     *  - password:     user password
      *
      * Response:
      *  - return 409 MissingParameterError  when email, password param missing or not correct format

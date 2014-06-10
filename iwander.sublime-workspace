@@ -216,95 +216,31 @@
 	"buffers":
 	[
 		{
-			"file": "server.js",
-			"settings":
-			{
-				"buffer_size": 2132,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "config/config.js",
-			"settings":
-			{
-				"buffer_size": 1753,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "package.json",
-			"settings":
-			{
-				"buffer_size": 1072,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "test/test-user.js",
-			"settings":
-			{
-				"buffer_size": 16161,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "config/server-restify.js",
-			"settings":
-			{
-				"buffer_size": 2083,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "config/authorization.js",
-			"settings":
-			{
-				"buffer_size": 1194,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "routes/routes-place.js",
 			"settings":
 			{
-				"buffer_size": 12934,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "routes/routes-user.js",
-			"settings":
-			{
-				"buffer_size": 8354,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "routes.js",
-			"settings":
-			{
-				"buffer_size": 1825,
-				"line_ending": "Unix"
+				"buffer_size": 14189,
+				"line_ending": "Windows"
 			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 150.0,
+		"height": 392.0,
 		"selected_items":
 		[
 			[
-				"insta",
+				"pack",
 				"Package Control: Install Package"
 			],
 			[
 				"pac",
-				"Package Control: Install Package"
+				"Package Control: Remove Package"
 			],
 			[
-				"pack",
-				"Package Control: List Packages"
+				"insta",
+				"Package Control: Install Package"
 			],
 			[
 				"Pac",
@@ -332,17 +268,27 @@
 	},
 	"file_history":
 	[
+		"/D/NodeJs/iwander/config/consts.js",
+		"/D/NodeJs/iwander/server.js",
+		"/D/NodeJs/iwander/config/server-restify.js",
+		"/D/NodeJs/iwander/routes.js",
+		"/D/NodeJs/iwander/routes/routes-place.js",
 		"/D/NodeJs/iwander/config/config.js",
+		"/D/NodeJs/iwander/routes/routes-user.js",
+		"/D/NodeJs/iwander/test/test-place.js",
+		"/D/NodeJs/iwander/test/test-user.js",
+		"/D/NodeJs/iwander/models/user.js",
+		"/D/NodeJs/iwander/configs/configs.js",
+		"/D/NodeJs/iwander/configs/server-restify.js",
 		"/D/NodeJs/iwander/node_modules/rekuire/lib/main.js",
+		"/D/NodeJs/iwander/package.json",
+		"/C/Program Files (x86)/Heroku/lib/heroku/updater.rb",
+		"/D/NodeJs/iwander/models/place.js",
+		"/D/NodeJs/iwander/libs/factories.js",
+		"/D/NodeJs/iwander/libs/utils.js",
+		"/D/NodeJs/iwander/config/authorization.js",
 		"/D/NodeJs/iwander/node_modules/rekuire/lib/helpers/scan.js",
 		"/D/NodeJs/iwander/node_modules/rekuire/lib/helpers/isString.js",
-		"/D/NodeJs/iwander/test/test-place.js",
-		"/D/NodeJs/iwander/routes.js",
-		"/D/NodeJs/iwander/package.json",
-		"/D/NodeJs/iwander/config/consts.js",
-		"/D/NodeJs/iwander/routes/routes-place.js",
-		"/D/NodeJs/iwander/routes/routes-user.js",
-		"/D/NodeJs/iwander/test/test-user.js",
 		"/home/thanhle/NodeJs/iwander/server.js",
 		"/home/thanhle/NodeJs/iwander/config/config.js",
 		"/home/thanhle/NodeJs/iwander/test/test-place.js",
@@ -502,204 +448,24 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "server.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2132,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								176,
-								176
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "config/config.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1753,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								44,
-								44
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "package.json",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1072,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								66,
-								66
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "test/test-user.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16161,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								387,
-								387
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "config/server-restify.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2083,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1763,
-								1763
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 360.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "config/authorization.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1194,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
 					"file": "routes/routes-place.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12934,
+						"buffer_size": 14189,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								257,
-								227
+								5413,
+								5413
 							]
 						],
 						"settings":
@@ -709,70 +475,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2205.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "routes/routes-user.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8354,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								86,
-								86
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "routes.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1825,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								146,
-								146
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]

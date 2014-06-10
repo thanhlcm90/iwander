@@ -106,6 +106,7 @@ module.exports = function(app) {
      * Request params:
      *  - token:        user token
      *  - country_name: country name
+     *  - method:       calulate method, enum value, 2 value: 'ita' or 'regular'. Default is 'ita'
      *
      * Response:
      *  - return 409 MissingParameterError  when country_name param missing
@@ -150,6 +151,7 @@ module.exports = function(app) {
      *
      * Request params:
      *  - token:        user token
+     *  - method:       calulate method, enum value, 2 value: 'ita' or 'regular'. Default is 'ita'
      *
      * Response:
      *  - return 403 NotAuthorizedError     when token param missing or not correct
@@ -174,7 +176,13 @@ module.exports = function(app) {
             res.send(200, place);
         })
     }
-
+    /**
+     * Update israel day spent in first time loged into system (after register)
+     * @param  {[type]}   req  request
+     * @param  {[type]}   res  response
+     * @param  {Function} next next
+     * @return {[type]}        [description]
+     */
     function updateIsraelDay(req, res, next) {
         var user = req.user;
         var israelSpentDay = req.params.israelSpentDay;
@@ -199,7 +207,7 @@ module.exports = function(app) {
      *Released on January 7th, returned on January 11
      *Released on Jan 18, returned in 26 - January
      *How to calculate how many days the user spends in Israel?
-     *Income tax system:
+     *Income tax system (ITA):
      *
      *Counting the day of departure and the day of return in Israel
      *That is -
@@ -212,7 +220,7 @@ module.exports = function(app) {
      *January 26 to 31 - Israel (six days)
      *Total days in Israel (IRS approach) - 1 + 4 + 8 + 6 = 19
      *
-     *Standard Method:
+     *Standard Method (regular):
      *
      *Count only the day entering Israel but the day is considered a day overseas port.
      *That is -
@@ -247,6 +255,17 @@ module.exports = function(app) {
         end.hour(23);
         end.minute(59);
         end.second(59);
+
+        // get method two method: ita or regular
+        var method = req.params.method;
+        if (validator.isNull(method)) {
+            // default method is ita
+            method = "ita";
+        }
+        if (method !== "ita" && method !== "regular") {
+            return callback(new restify.InvalidArgumentError("unknown method"));
+        }
+
         // we will find all documents in Place collection in current year
         var where = {
             user_id: user._id,
@@ -270,10 +289,14 @@ module.exports = function(app) {
                     // get first value time zone, convert it to israel time zone
                     var firstTime = moment(value[0].time_start).tz(israelTimezone);
                     result[countryName] = [];
-                    // first log country is not israel, we consider have 1 day in israel
-                    if (countryName.toLowerCase() !== 'israel') {
-                        result['israel'] = [];
-                        result['israel'].push(firstTime);
+                    if (method === 'ita') {
+                        // ITA method: first log country is not israel, we consider have 1 day in israel
+                        if (countryName.toLowerCase() !== 'israel') {
+                            result['israel'] = [];
+                            result['israel'].push(firstTime);
+                        } else {
+                            result[countryName].push(firstTime);
+                        }
                     } else {
                         result[countryName].push(firstTime);
                     }
@@ -293,11 +316,15 @@ module.exports = function(app) {
                             addDateRange(firstTime, currentTime, result[countryName]);
                         }
                         // add current country_name
-                        // check if previous country is israel, then push previous country
-                        if (countryName.toLowerCase() === 'israel') {
-                            result[countryName].push(currentTime);
+                        if (method === 'ita') {
+                            // ITA method: check if previous country is israel, then push previous country
+                            if (countryName.toLowerCase() === 'israel') {
+                                result[countryName].push(currentTime);
+                            } else {
+                                // push current country
+                                result[value[i].country_name].push(currentTime);
+                            }
                         } else {
-                            // push current country
                             result[value[i].country_name].push(currentTime);
                         }
                         countryName = value[i].country_name;
