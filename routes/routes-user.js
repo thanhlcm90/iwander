@@ -170,6 +170,9 @@ module.exports = function(app) {
                         if (token && token.length) { // token exists
                             // delete row hashed_password
                             data.hashed_password = undefined;
+                            if (data.israel_spent_day === undefined) {
+                                data.israel_spent_day = 0;
+                            }
                             // return status code 200 with current token
                             res.send(200, data);
                         } else {
@@ -181,6 +184,9 @@ module.exports = function(app) {
                                 if (!err) {
                                     // delete row hashed_password
                                     data.hashed_password = undefined;
+                                    if (data.israel_spent_day === undefined) {
+                                        data.israel_spent_day = 0;
+                                    }
                                     // save successfully, return status code 200 with new token
                                     res.send(200, data);
                                     return next();
