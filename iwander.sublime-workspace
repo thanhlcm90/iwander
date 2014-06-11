@@ -219,7 +219,7 @@
 			"file": "routes/routes-place.js",
 			"settings":
 			{
-				"buffer_size": 14189,
+				"buffer_size": 14336,
 				"line_ending": "Windows"
 			}
 		}
@@ -268,18 +268,19 @@
 	},
 	"file_history":
 	[
-		"/D/NodeJs/iwander/config/consts.js",
-		"/D/NodeJs/iwander/server.js",
-		"/D/NodeJs/iwander/config/server-restify.js",
-		"/D/NodeJs/iwander/routes.js",
-		"/D/NodeJs/iwander/routes/routes-place.js",
 		"/D/NodeJs/iwander/config/config.js",
-		"/D/NodeJs/iwander/routes/routes-user.js",
+		"/D/NodeJs/iwander/routes.js",
+		"/D/NodeJs/iwander/server.js",
 		"/D/NodeJs/iwander/test/test-place.js",
-		"/D/NodeJs/iwander/test/test-user.js",
+		"/D/NodeJs/iwander/configs/consts.js",
+		"/D/NodeJs/iwander/config/consts.js",
 		"/D/NodeJs/iwander/models/user.js",
-		"/D/NodeJs/iwander/configs/configs.js",
+		"/D/NodeJs/iwander/routes/routes-user.js",
 		"/D/NodeJs/iwander/configs/server-restify.js",
+		"/D/NodeJs/iwander/routes/routes-place.js",
+		"/D/NodeJs/iwander/config/server-restify.js",
+		"/D/NodeJs/iwander/test/test-user.js",
+		"/D/NodeJs/iwander/configs/configs.js",
 		"/D/NodeJs/iwander/node_modules/rekuire/lib/main.js",
 		"/D/NodeJs/iwander/package.json",
 		"/C/Program Files (x86)/Heroku/lib/heroku/updater.rb",
@@ -385,6 +386,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"user_column_query",
 			"config.root",
 			"validator",
 			"for",
@@ -454,18 +456,18 @@
 				{
 					"buffer": 0,
 					"file": "routes/routes-place.js",
-					"semi_transient": false,
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 14189,
+						"buffer_size": 14336,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5413,
-								5413
+								2477,
+								2477
 							]
 						],
 						"settings":
@@ -474,8 +476,8 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 0.0,
-						"translation.y": 2205.0,
+						"translation.x": -0.0,
+						"translation.y": 270.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -522,7 +524,7 @@
 	"project": "iwander.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 62.0
 	},
 	"save_all_on_build": true,
 	"select_file":

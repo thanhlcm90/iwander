@@ -136,7 +136,7 @@ module.exports = function(app) {
             var spent = 0;
             if (place && place.length > 0) {
                 spent = place[0].spent;
-            } else {
+            } else if (countryName === 'israel') {
                 spent = user.israel_spent_day;
             }
             res.send(200, {
@@ -163,6 +163,7 @@ module.exports = function(app) {
      * @return {[type]}        [description]
      */
     function list(req, res, next) {
+        var user = req.user;
         getListPlace(req, function(err, place) {
             next.ifError(err);
             if (place.length === 0) {
@@ -306,6 +307,10 @@ module.exports = function(app) {
                         var currentTime = moment(value[i].time_start).tz(israelTimezone);
                         // get days diff between two date
                         var diff = Math.abs(firstTime.diff(currentTime, 'days'));
+                        if (diff === 0) {
+                            // log 2 place or 1 place into 1 date, remove previous
+                            result[countryName].splice
+                        }
                         // result hasn't object with key is country name, create one with array null
                         if (!result[value[i].country_name]) {
                             result[value[i].country_name] = [];
