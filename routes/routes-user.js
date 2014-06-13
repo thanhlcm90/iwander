@@ -32,6 +32,17 @@ module.exports = function(app) {
             user.fullname = req.params.fullname;
         }
         if (!validator.isNull(req.params.password)) {
+            // when change password, need oldpassword to confirm
+            var oldPassword = req.params.oldpassword;
+            // check old password not null
+            if (validator.isNull(oldPassword)) {
+                return next(new restify.MissingParameterError('Change password, old password cannot be blank'));
+            }
+            // check old password is matched current password
+            if (!user.authenticate(oldPassword)) {
+                return next(new restify.MissingParameterError('Change password, old password not correct'));
+            }
+            // change password
             user.password = req.params.password;
         }
         user.save(function(err, data) {
@@ -73,8 +84,7 @@ module.exports = function(app) {
      *  - password:     user password
      *
      * Response:
-     *  - return 500 InternalError  when email, password param missing or not correct format
-     *  - return 500 InternalError  when register with exist email
+     *  - return 409 InternalError  when email, password param missing or not correct format or email exists
      *  - return 201 Created        when register user is successfully
      *
      * @param request

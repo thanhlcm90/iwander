@@ -289,6 +289,15 @@ describe('Update user api put:' + consts.url_user_update, function() {
                 .expect(authorizedError)
                 .end(done);
         });
+        it('return ' + validationError + ' when update password not success, missing oldpassword param', function(done) {
+            Factory.build('user2', function(user) {
+                request(app).put(consts.url_user_update.replace(':token', token))
+                    .field('password', user.password)
+                    .expect('Content-Type', jsonContentType)
+                    .expect(validationError)
+                    .end(done);
+            });
+        })
     });
     describe('Valid parameters', function() {
         it('return ' + successStatusCode + ' when update fullname success', function(done) {
@@ -308,9 +317,10 @@ describe('Update user api put:' + consts.url_user_update, function() {
             });
         })
         it('return ' + successStatusCode + ' when update password success', function(done) {
-            Factory.build('user2', function(user) {
+            Factory.build('user1', function(user) {
                 request(app).put(consts.url_user_update.replace(':token', token))
                     .field('password', user.password)
+                    .field('oldpassword', user.password)
                     .expect('Content-Type', jsonContentType)
                     .expect(successStatusCode)
                     .end(function(err, res) {
@@ -323,10 +333,11 @@ describe('Update user api put:' + consts.url_user_update, function() {
             });
         })
         it('return ' + successStatusCode + ' when update both fullname & password success', function(done) {
-            Factory.build('user2', function(user) {
+            Factory.build('user1', function(user) {
                 request(app).put(consts.url_user_update.replace(':token', token))
                     .field('fullname', user.fullname)
                     .field('password', user.password)
+                    .field('oldpassword', user.password)
                     .expect('Content-Type', jsonContentType)
                     .expect(successStatusCode)
                     .end(function(err, res) {

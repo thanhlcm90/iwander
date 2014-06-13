@@ -68,10 +68,9 @@ module.exports = function(app) {
         end.minute(59);
         end.second(59);
 
-        // condition query is user_id, country_name, and start_time between start and end
+        // condition query is user_id, and start_time between start and end
         var where = {
             user_id: user._id,
-            country_name: countryName,
             time_start: {
                 $gte: start.format(),
                 $lte: end.format()
@@ -258,14 +257,9 @@ module.exports = function(app) {
         end.minute(59);
         end.second(59);
 
-        if (!validator.isNull(year) && validator.isNumeric(year)) {
-            start.year(year);
-            end.year(year);
-        } else {
-            // get all year
-            start.year(1);
-            end.year(9999);
-        }
+        // get all year
+        start.year(1);
+        end.year(9999);
 
         // get method two method: ita or regular
         var method = req.params.method;
@@ -347,24 +341,39 @@ module.exports = function(app) {
                     }
                 }
                 // convert object to array
+                var validateYear = !validator.isNull(year) && validator.isNumeric(year);
+                if (validateYear) {
+                    // convert to number
+                    year = parseInt(year);
+                }
                 var places = Object.keys(result);
                 var array = [];
                 places.forEach(function(place) {
                     var arrayTime = [];
                     for (i = 0; i < result[place].length; i++) {
-                        arrayTime.push(result[place][i].format());
+                        // check year
+                        if (validateYear && result[place][i].year() === year) {
+                            arrayTime.push(result[place][i].format());
+                        } else if (!validateYear) {
+                            arrayTime.push(result[place][i].format());
+                        }
                     }
-                    var daySpent = result[place].length;
+                    var daySpent = arrayTime.length;
                     // country is israel, add israelSpentDay in user
                     if (place === 'israel') {
                         daySpent += user.israel_spent_day;
                     }
-                    var item = {
-                        _id: place,
-                        spent: daySpent,
-                        date: arrayTime
+                    if (daySpent > 0) {
+                        var item = {
+                            _id: place,
+                            spent: daySpent,
+                            date: arrayTime
+                        }
+                        array.push(item);
                     }
-                    array.push(item);
+                });
+                array.sort(function(a, b) {
+                    return a._id.localeCompare(b._id);
                 });
                 return callback(null, array);
             });

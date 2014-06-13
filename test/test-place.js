@@ -375,11 +375,27 @@ describe('Get list place and day spent', function() {
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
                     res.body.length.should.equal(3);
-                    res.body[0]._id.should.equal('vietnam');
-                    res.body[0].spent.should.equal(5);
+                    res.body[0]._id.should.equal('china');
+                    res.body[0].spent.should.equal(7);
                     res.body[1]._id.should.equal('israel');
                     res.body[1].spent.should.equal(14);
-                    res.body[2]._id.should.equal('china');
+                    res.body[2]._id.should.equal('vietnam');
+                    res.body[2].spent.should.equal(5);
+                    done();
+                });
+        });
+        it('return ' + successStatusCode + ' and have 3 item (vietnam-7, israel-11, china-8) when get list place with day spent using REGULAR method in year 2014', function(done) {
+            request(app).get(consts.url_place_list + "?token=" + token + "&method=regular&year=2014")
+                .expect('Content-Type', jsonContentType)
+                .expect(successStatusCode)
+                .end(function(err, res) {
+                    res.statusCode.should.equal(successStatusCode);
+                    res.body.length.should.equal(3);
+                    res.body[0]._id.should.equal('china');
+                    res.body[0].spent.should.equal(8);
+                    res.body[1]._id.should.equal('israel');
+                    res.body[1].spent.should.equal(11);
+                    res.body[2]._id.should.equal('vietnam');
                     res.body[2].spent.should.equal(7);
                     done();
                 });
@@ -391,28 +407,12 @@ describe('Get list place and day spent', function() {
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
                     res.body.length.should.equal(3);
-                    res.body[0]._id.should.equal('vietnam');
-                    res.body[0].spent.should.equal(7);
+                    res.body[0]._id.should.equal('china');
+                    res.body[0].spent.should.equal(8);
                     res.body[1]._id.should.equal('israel');
                     res.body[1].spent.should.equal(11);
-                    res.body[2]._id.should.equal('china');
-                    res.body[2].spent.should.equal(8);
-                    done();
-                });
-        });
-        it('return ' + successStatusCode + ' and have 3 item (vietnam-7, israel-11, china-8) when get list place with day spent using REGULAR method in year 2014', function(done) {
-            request(app).get(consts.url_place_list + "?token=" + token + "&method=regular&year=2014")
-                .expect('Content-Type', jsonContentType)
-                .expect(successStatusCode)
-                .end(function(err, res) {
-                    res.statusCode.should.equal(successStatusCode);
-                    res.body.length.should.equal(3);
-                    res.body[0]._id.should.equal('vietnam');
-                    res.body[0].spent.should.equal(7);
-                    res.body[1]._id.should.equal('israel');
-                    res.body[1].spent.should.equal(11);
-                    res.body[2]._id.should.equal('china');
-                    res.body[2].spent.should.equal(8);
+                    res.body[2]._id.should.equal('vietnam');
+                    res.body[2].spent.should.equal(7);
                     done();
                 });
         });
@@ -435,12 +435,12 @@ describe('Get list place and day spent', function() {
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
                     res.body.length.should.equal(3);
-                    res.body[0]._id.should.equal('israel');
-                    res.body[0].spent.should.equal(23);
-                    res.body[1]._id.should.equal('vietnam');
-                    res.body[1].spent.should.equal(7);
-                    res.body[2]._id.should.equal('china');
-                    res.body[2].spent.should.equal(8);
+                    res.body[0]._id.should.equal('china');
+                    res.body[0].spent.should.equal(8);
+                    res.body[1]._id.should.equal('israel');
+                    res.body[1].spent.should.equal(23);
+                    res.body[2]._id.should.equal('vietnam');
+                    res.body[2].spent.should.equal(7);
                     done();
                 });
         });
