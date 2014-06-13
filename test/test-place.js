@@ -201,7 +201,7 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
         before(function(done) {
             Place.remove(done);
         });
-        it('return ' + successStatusCode + ' when log vietnam', function(done) {
+        it('return ' + successStatusCode + ' when log vietnam 1,3,7/1/2014', function(done) {
             async.each([1, 3, 7], function(item, cb) {
                 Factory.build('place1', function(place) {
                     request(app).put(consts.url_place_log_time)
@@ -220,7 +220,7 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
             }, done);
         });
 
-        it('return ' + successStatusCode + ' when log israel', function(done) {
+        it('return ' + successStatusCode + ' when log israel 4,11,26/1/2014', function(done) {
             async.each([4, 11, 26], function(item, cb) {
                 Factory.build('place2', function(place) {
                     request(app).put(consts.url_place_log_time)
@@ -239,7 +239,7 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
             }, done);
         });
 
-        it('return ' + successStatusCode + ' when log china', function(done) {
+        it('return ' + successStatusCode + ' when log china 18, 20, 22/1/2014', function(done) {
             async.each([18, 20, 22], function(item, cb) {
                 Factory.build('place3', function(place) {
                     request(app).put(consts.url_place_log_time)
@@ -257,8 +257,28 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 });
             }, done);
         });
-        it('return ' + successStatusCode + ' and spent = 5 when get spent day of vietnam using ITA method', function(done) {
-            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'vietnam') + "?token=" + token)
+
+        it('return ' + successStatusCode + ' when log israel 20/12/2013', function(done) {
+            async.each([20, 31], function(item, cb) {
+                Factory.build('place2', function(place) {
+                    request(app).put(consts.url_place_log_time)
+                        .field("token", token)
+                        .field("country_name", place.country_name)
+                        .field("lng", place.lng)
+                        .field("lat", place.lat)
+                        .field("time_start", '2013-12-' + item + 'T06:00:00+0000')
+                        .expect(successStatusCode)
+                        .end(function(err, res) {
+                            if (err) console.log(res.body);
+                            res.statusCode.should.equal(successStatusCode);
+                            cb();
+                        });
+                });
+            }, done);
+        });
+
+        it('return ' + successStatusCode + ' and spent = 5 when get spent day of vietnam using ITA method in year 2014', function(done) {
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'vietnam') + "?token=" + token + "&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
@@ -267,8 +287,8 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                     done();
                 });
         });
-        it('return ' + successStatusCode + ' and spent = 7 when get spent day of vietnam using REGULAR method', function(done) {
-            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'vietnam') + "?token=" + token + "&method=regular")
+        it('return ' + successStatusCode + ' and spent = 7 when get spent day of vietnam using REGULAR method in year 2014', function(done) {
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'vietnam') + "?token=" + token + "&method=regular&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
@@ -278,8 +298,8 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 });
         });
 
-        it('return ' + successStatusCode + ' and spent = 14 when get spent day of israel using ITA method', function(done) {
-            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'israel') + "?token=" + token)
+        it('return ' + successStatusCode + ' and spent = 14 when get spent day of israel using ITA method in year 2014', function(done) {
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'israel') + "?token=" + token + "&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
@@ -288,8 +308,8 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                     done();
                 });
         });
-        it('return ' + successStatusCode + ' and spent = 11 when get spent day of israel using REGULAR method', function(done) {
-            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'israel') + "?token=" + token + "&method=regular")
+        it('return ' + successStatusCode + ' and spent = 11 when get spent day of israel using REGULAR method in year 2014', function(done) {
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'israel') + "?token=" + token + "&method=regular&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
@@ -299,8 +319,8 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 });
         });
 
-        it('return ' + successStatusCode + ' and spent = 7 when get spent day of china using ITA method', function(done) {
-            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'china') + "?token=" + token)
+        it('return ' + successStatusCode + ' and spent = 7 when get spent day of china using ITA method in year 2014', function(done) {
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'china') + "?token=" + token + "&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
@@ -309,13 +329,23 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                     done();
                 });
         });
-        it('return ' + successStatusCode + ' and spent = 8 when get spent day of china using REGULAR method', function(done) {
-            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'china') + "?token=" + token + "&method=regular")
+        it('return ' + successStatusCode + ' and spent = 8 when get spent day of china using REGULAR method in year 2014', function(done) {
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'china') + "?token=" + token + "&method=regular&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
                     res.body.spent.should.equal(8);
+                    done();
+                });
+        });
+        it('return ' + successStatusCode + ' and spent = 12 when get spent day of israel using REGULAR method in year 2013', function(done) {
+            request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'israel') + "?token=" + token + "&method=regular&year=2013")
+                .expect('Content-Type', jsonContentType)
+                .expect(successStatusCode)
+                .end(function(err, res) {
+                    res.statusCode.should.equal(successStatusCode);
+                    res.body.spent.should.equal(12);
                     done();
                 });
         });
@@ -338,8 +368,8 @@ describe('Get list place and day spent', function() {
         });
     });
     describe('Valid parammeters', function() {
-        it('return ' + successStatusCode + ' and have 3 item (vietnam-5, israel-14, china-7) when get list place with day spent using ITA method', function(done) {
-            request(app).get(consts.url_place_list + "?token=" + token)
+        it('return ' + successStatusCode + ' and have 3 item (vietnam-5, israel-14, china-7) when get list place with day spent using ITA method in year 2014', function(done) {
+            request(app).get(consts.url_place_list + "?token=" + token + "&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
@@ -354,8 +384,8 @@ describe('Get list place and day spent', function() {
                     done();
                 });
         });
-        it('return ' + successStatusCode + ' and have 3 item (vietnam-7, israel-11, china-8) when get list place with day spent using REGULAR method', function(done) {
-            request(app).get(consts.url_place_list + "?token=" + token + "&method=regular")
+        it('return ' + successStatusCode + ' and have 3 item (vietnam-7, israel-11, china-8) when get list place with day spent using REGULAR method in year 2014', function(done) {
+            request(app).get(consts.url_place_list + "?token=" + token + "&method=regular&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
@@ -386,13 +416,40 @@ describe('Get list place and day spent', function() {
                     done();
                 });
         });
-        it('return ' + successStatusCode + ' and nothing', function(done) {
+        it('return ' + successStatusCode + ' and have 1 item (israel-12) when get list place with day spent using REGULAR method in year 2013', function(done) {
+            request(app).get(consts.url_place_list + "?token=" + token + "&method=regular&year=2013")
+                .expect('Content-Type', jsonContentType)
+                .expect(successStatusCode)
+                .end(function(err, res) {
+                    res.statusCode.should.equal(successStatusCode);
+                    res.body.length.should.equal(1);
+                    res.body[0]._id.should.equal('israel');
+                    res.body[0].spent.should.equal(12);
+                    done();
+                });
+        });
+        it('return ' + successStatusCode + ' and have 3 item (vietnam-7, israel-23, china-8) when get list place with day spent using REGULAR method all year', function(done) {
+            request(app).get(consts.url_place_list + "?token=" + token + "&method=regular")
+                .expect('Content-Type', jsonContentType)
+                .expect(successStatusCode)
+                .end(function(err, res) {
+                    res.statusCode.should.equal(successStatusCode);
+                    res.body.length.should.equal(3);
+                    res.body[0]._id.should.equal('israel');
+                    res.body[0].spent.should.equal(23);
+                    res.body[1]._id.should.equal('vietnam');
+                    res.body[1].spent.should.equal(7);
+                    res.body[2]._id.should.equal('china');
+                    res.body[2].spent.should.equal(8);
+                    done();
+                });
+        });
+        it('return ' + successStatusCode + ' and nothing when get list place in year 2015', function(done) {
             request(app).get(consts.url_place_list + "?token=" + token + "&method=regular&year=2015")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
-                    console.log(res.body);
                     res.body.length.should.equal(0);
                     done();
                 });

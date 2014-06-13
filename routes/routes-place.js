@@ -261,6 +261,10 @@ module.exports = function(app) {
         if (!validator.isNull(year) && validator.isNumeric(year)) {
             start.year(year);
             end.year(year);
+        } else {
+            // get all year
+            start.year(1);
+            end.year(9999);
         }
 
         // get method two method: ita or regular
