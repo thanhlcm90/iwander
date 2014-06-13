@@ -166,7 +166,7 @@ module.exports = function(app) {
         var user = req.user;
         getListPlace(req, function(err, place) {
             next.ifError(err);
-            if (place.length === 0) {
+            if (place.length === 0 && user.israel_spent_day !== 0) {
                 var item = {
                     _id: "israel",
                     spent: user.israel_spent_day,
@@ -241,6 +241,7 @@ module.exports = function(app) {
 
         var i;
         var user = req.user;
+        var year = req.params.year;
         // init start day is begin date of year
         var start = moment().tz(israelTimezone);
         start.month(0);
@@ -256,6 +257,11 @@ module.exports = function(app) {
         end.hour(23);
         end.minute(59);
         end.second(59);
+
+        if (!validator.isNull(year) && validator.isNumeric(year)) {
+            start.year(year);
+            end.year(year);
+        }
 
         // get method two method: ita or regular
         var method = req.params.method;
