@@ -241,6 +241,7 @@ module.exports = function(app) {
         var i;
         var user = req.user;
         var year = req.params.year;
+        var removeDuplicate = req.params.removeduplicate;
         // init start day is begin date of year
         var start = moment().tz(israelTimezone);
         start.month(0);
@@ -311,7 +312,8 @@ module.exports = function(app) {
                         var currentTime = moment(value[i].time_start).tz(israelTimezone);
                         // get days diff between two date
                         var diff = Math.abs(firstTime.diff(currentTime, 'days'));
-                        if (diff === 0) {
+                        // remove duplicate days
+                        if (removeDuplicate === '1' && diff === 0 && result[countryName].length > 0) {
                             // log 2 place or 1 place into 1 date, remove previous
                             result[countryName].splice(-1);
                         }
