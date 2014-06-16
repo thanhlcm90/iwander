@@ -313,7 +313,7 @@ module.exports = function(app) {
                         var diff = Math.abs(firstTime.diff(currentTime, 'days'));
                         if (diff === 0) {
                             // log 2 place or 1 place into 1 date, remove previous
-                            result[countryName].splice
+                            result[countryName].splice(-1);
                         }
                         // result hasn't object with key is country name, create one with array null
                         if (!result[value[i].country_name]) {
