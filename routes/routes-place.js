@@ -363,7 +363,14 @@ module.exports = function(app) {
                     var daySpent = arrayTime.length;
                     // country is israel, add israelSpentDay in user
                     if (place === 'israel') {
-                        daySpent += user.israel_spent_day;
+                        if (validateYear && result[place].length > 0) {
+                            // check first log year is equal year param, add israelSpentDay
+                            if (result[place][0].year === year) {
+                                daySpent += user.israel_spent_day;
+                            }
+                        } else {
+                            daySpent += user.israel_spent_day;
+                        }
                     }
                     if (daySpent > 0) {
                         var item = {
