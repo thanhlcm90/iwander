@@ -365,7 +365,7 @@ module.exports = function(app) {
                     if (place === 'israel') {
                         if (validateYear && result[place].length > 0) {
                             // check first log year is equal year param, add israelSpentDay
-                            if (result[place][0].year === year) {
+                            if (result[place][0].year() === year) {
                                 daySpent += user.israel_spent_day;
                             }
                         } else {
