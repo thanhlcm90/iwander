@@ -28,11 +28,19 @@ var PlaceSchema = new Schema({
         trim: true,
         lowercase: true
     },
+    country_name_last: {
+        type: String,
+        trim: true,
+        lowercase: true
+    },
     spent: {
         type: Number,
         default: 1
     },
     time_start: {
+        type: String
+    },
+    time_end: {
         type: String
     },
     dateCreated: {

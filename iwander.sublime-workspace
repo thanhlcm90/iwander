@@ -224,38 +224,22 @@
 	"buffers":
 	[
 		{
-			"file": "/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfview/forms.js",
+			"file": "routes/routes-place.js",
 			"settings":
 			{
-				"buffer_size": 1969,
-				"line_ending": "Unix"
+				"buffer_size": 15951,
+				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/js/minimal.js",
+			"contents": "// dependencies\nvar mongoose = require('mongoose'),\n    User = mongoose.model('User'),\n    ObjectId = mongoose.Types.ObjectId,\n    restify = require('restify'),\n    moment = require('moment'),\n    validator = require('validator'),\n    consts = require(__config_path + \"/consts\");\n\nmodule.exports = function(app) {\n\n    /**\n     * This method for request update user profile\n     *\n     * Params:\n     *  - token:        token authencate\n     *  - fullname:     new user fullname\n     *  - password:     new user password\n     *\n     * Response:\n     *  - return 404 NotFoundError      when token param missing\n     *  - return 403 NotAuthorizedError when token param is missing or not correct\n     *  - return 200 OK                 when change successfully\n     */\n    function updateUser(req, res, next) {\n        // get user model from request\n        var user = req.user;\n        if (validator.isNull(req.params.fullname) && validator.isNull(req.params.password)) {\n            return next(new restify.MissingParameterError('fullname or password cannot be blank'));\n        }\n        if (!validator.isNull(req.params.fullname)) {\n            user.fullname = req.params.fullname;\n        }\n        if (!validator.isNull(req.params.password)) {\n            // when change password, need oldpassword to confirm\n            var oldPassword = req.params.oldpassword;\n            // check old password not null\n            if (validator.isNull(oldPassword)) {\n                return next(new restify.MissingParameterError('Change password, old password cannot be blank'));\n            }\n            // check old password is matched current password\n            if (!user.authenticate(oldPassword)) {\n                return next(new restify.MissingParameterError('Change password, old password not correct'));\n            }\n            // change password\n            user.password = req.params.password;\n        }\n        user.save(function(err, data) {\n            if (err) console.log(err);\n            next.ifError(err);\n            // delete row hashed_password\n            data.hashed_password = undefined;\n            res.send(data);\n            next();\n        });\n    }\n\n    /**\n     * This method for request get user api\n     *\n     * Params:\n     *  - token:        token authencate\n     *\n     * Response:\n     *  - return 404 NotFoundError      when token param missing\n     *  - return 403 NotAuthorizedError when token param is missing or not correct\n     *  - return 200 and User data json when token param is correct and get user data successfully\n     *\n     * @param request\n     * @param response\n     * @param next method\n     */\n    function getUser(req, res, next) {\n        res.send(req.user);\n        next();\n    }\n\n    /**\n     * This method for register new user api\n     *\n     * Params:\n     *  - email:        user email\n     *  - fullname:     user fullname\n     *  - password:     user password\n     *\n     * Response:\n     *  - return 409 InternalError  when email, password param missing or not correct format or email exists\n     *  - return 201 Created        when register user is successfully\n     *\n     * @param request\n     * @param response\n     * @param next method\n     */ \n    function register(req, res, next) {\n        // validator\n        if (validator.isNull(req.params.fullname)) {\n            return next(new restify.MissingParameterError('fullname cannot be blank'));\n        } else if (validator.isNull(req.params.email)) {\n            return next(new restify.MissingParameterError('email cannot be blank'));\n        } else if (validator.isNull(req.params.password)) {\n            return next(new restify.MissingParameterError('password cannot be blank'));\n        } else if (!validator.isEmail(req.params.email)) {\n            return next(new restify.MissingParameterError('email is not correct format'));\n        }\n\n        User.findOne({\n            email: req.params.email.toLowerCase().trim()\n        }, function(err, data) {\n            next.ifError(err);\n            if (data) {\n                return next(new restify.MissingParameterError('email is exists'));\n            } else {\n                // Create a new user model, fill it up and save it to Mongodb\n                var user = new User();\n                user.fullname = req.params.fullname;\n                user.email = req.params.email;\n                user.password = req.params.password;\n                user.token = new ObjectId().toString();\n                user.save(function(err) {\n                    next.ifError(err);\n                    // delete row hashed_password\n                    user.hashed_password = undefined;\n                    // save succesfully, return status code 201 with user json\n                    res.send(201, user);\n                    next();\n                });\n            }\n        });\n    }\n\n    /**\n     * This method for login user api.\n     *\n     * We will check email & password, if it correct, check token. If token exists, return current token\n     * If token not exists, generate a new token\n     *\n     * Method: POST\n     *\n     * Params:\n     *  - email:        user email\n     *  - password:     user password\n     *\n     * Response:\n     *  - return 409 MissingParameterError  when email, password param missing or not correct format\n     *  - return 403 NotAuthorizedError     when password not correct with email\n     *  - return 200 OK                     when success\n     *\n     * @param request\n     * @param response\n     * @param next method\n     */\n    function login(req, res, next) {\n        var email = req.params.email;\n        var password = req.params.password;\n\n        // validator\n        if (validator.isNull(email)) {\n            return next(new restify.MissingParameterError('email cannot be blank'));\n        } else if (validator.isNull(password)) {\n            return next(new restify.MissingParameterError('password cannot be blank'));\n        } else if (!validator.isEmail(email)) {\n            return next(new restify.MissingParameterError('email is not correct format'));\n        }\n\n        // get email and password params and check params exists\n        // query user with email\n        var query = {\n            email: email\n        };\n        User.findOne(query, '+hashed_password', function(err, data) {\n            if (!err) { // query successfully\n                if (data === null) { // not found user\n                    return next(new restify.NotAuthorizedError(\"email doesn't exists\"));\n                } else { // found user\n                    if (!data.authenticate(password)) { // check password is correct?\n                        return next(new restify.NotAuthorizedError(\"password isn't correct\"));\n                    } else {\n                        // email, password are correct, check token\n                        var token = data.token;\n                        if (token && token.length) { // token exists\n                            // delete row hashed_password\n                            data.hashed_password = undefined;\n                            if (data.israel_spent_day === undefined) {\n                                data.israel_spent_day = 0;\n                            }\n                            // return status code 200 with current token\n                            res.send(200, data);\n                        } else {\n                            // generate new token (mongo ObjectId)\n                            token = new ObjectId().toString();\n                            data.token = token;\n                            // save new token\n                            data.save(function(err) {\n                                if (!err) {\n                                    // delete row hashed_password\n                                    data.hashed_password = undefined;\n                                    if (data.israel_spent_day === undefined) {\n                                        data.israel_spent_day = 0;\n                                    }\n                                    // save successfully, return status code 200 with new token\n                                    res.send(200, data);\n                                    return next();\n                                } else {\n                                    return next(err);\n                                }\n                            });\n                        }\n                    }\n                }\n            } else {\n                var errObj = err;\n                if (err.err) {\n                    errObj = err.err;\n                }\n                return next(new restify.InternalError(errObj));\n            }\n        });\n    }\n\n    /**\n     * This method for logout user api\n     *\n     * We will check user id, if exists, reset user token\n     *\n     * Response:\n     *  - return 403 NotAuthorizedError when token param is missing or not correct\n     *  - return 200 OK                 when token param is correct and get user data successfully\n     *\n     * @param request\n     * @param response\n     * @param next method\n     */\n    function logout(req, res, next) {\n        var user = req.user;\n        user.token = null;\n        user.save(function(err) {\n            if (!err) {\n                // saving successfully, send status code 200\n                res.send(200);\n                return next();\n            } else {\n                return next(err);\n            }\n        });\n    }\n\n    // setup route for user\n    app.get(consts.url_user_get, getUser);\n    app.post(consts.url_user_register, register);\n    app.post(consts.url_user_login, login);\n    app.post(consts.url_user_logout, logout);\n    app.put(consts.url_user_update, updateUser);\n};",
+			"file": "routes/routes-user.js",
+			"file_size": 9960,
+			"file_write_time": 130481345181439063,
 			"settings":
 			{
-				"buffer_size": 3646,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/index.html",
-			"settings":
-			{
-				"buffer_size": 1262,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "/* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */\n/* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */\n\n//\n// Basic AcroForms input controls rendering\n//\n\n'use strict';\n//\n// Disable workers to avoid yet another cross-origin issue (workers need the URL of\n// the script to be loaded, and currently do not allow cross-origin scripts)\n//\n//PDFJS.disableWorker = true;\n\nfunction renderPage(div, pdf, pageNumber) {\n    pdf.getPage(pageNumber).then(function(page) {\n        //var hPadding = 10;\n        //var pageWidth = page.view[2];\n        var pageWidthScale = 1; //(window.innerWidth - hPadding * 4) / pageWidth;\n        var viewport = page.getViewport(pageWidthScale);\n\n        var pageDisplayWidth = viewport.width;\n        var pageDisplayHeight = viewport.height;\n\n        var pageDivHolder = document.createElement('div');\n        pageDivHolder.className = 'pdfpage';\n        pageDivHolder.style.width = pageDisplayWidth + 'px';\n        pageDivHolder.style.height = pageDisplayHeight + 'px';\n        div.appendChild(pageDivHolder);\n\n        // Prepare canvas using PDF page dimensions\n        var canvas = document.createElement('canvas');\n        var context = canvas.getContext('2d');\n        canvas.width = pageDisplayWidth;\n        canvas.height = pageDisplayHeight;\n        pageDivHolder.appendChild(canvas);\n\n        // Render PDF page into canvas context\n        var renderContext = {\n            canvasContext: context,\n            viewport: viewport\n        };\n        page.render(renderContext); //.promise.then(callback);\n    });\n}\n\n// Fetch the PDF document from the URL using promices\nPDFJS.getDocument(pdfWithFormsPath).then(function getPdfForm(pdf) {\n    // Rendering all pages starting from first\n    var viewer = document.getElementById('viewer');\n    var pageNumber;\n    for (pageNumber = 1; pageNumber < pdf.numPages; pageNumber++) {\n        renderPage(viewer, pdf, pageNumber);\n    }\n});",
-			"file": "/D/Android/EffortlessEnglish/assets/pdfviewer/forms.js",
-			"file_size": -1,
-			"file_write_time": -1,
-			"settings":
-			{
-				"buffer_size": 1956,
-				"line_ending": "Unix"
+				"buffer_size": 9709,
+				"line_ending": "Windows"
 			}
 		}
 	],
@@ -303,14 +287,22 @@
 	},
 	"file_history":
 	[
+		"/D/NodeJs/iwander/models/user.js",
+		"/D/NodeJs/iwander/models/place.js",
+		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfviewer/forms.js",
+		"/D/Android/EffortlessEnglish/assets/forms.js",
+		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfview/forms.js",
+		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/js/minimal.js",
+		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/index.html",
+		"/D/Android/EffortlessEnglish/assets/pdfviewer/forms.js",
+		"/D/NodeJs/iwander/routes/routes-place.js",
+		"/D/Android/EffortlessEnglish/assets/pdfviewer/index.html",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/js/jquery.min.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/build/pdf.worker.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/build/pdf.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfview/pdf.worker.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfview/pdf.js",
-		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/index.html",
 		"/D/Android/PdfViewer/assets/pdfview/forms.js",
-		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfview/forms.js",
 		"/D/Android/PdfViewer/assets/pdfview/compatibility.js",
 		"/D/Android/PdfViewer/assets/pdfview/pdf.js",
 		"/D/Android/PdfViewer/assets/pdfviewer/customview.js",
@@ -318,7 +310,6 @@
 		"/D/Android/PdfViewer/assets/pdfviewer/index.html",
 		"/D/Android/PdfViewer/assets/pdfview/pdf.worker.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/web/viewer.js",
-		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/js/minimal.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/build/index.html",
 		"/C/Users/Thành/Downloads/Compressed/pdfobject.js/pdfobject.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/acroforms/forms.js",
@@ -338,7 +329,6 @@
 		"/D/Android/YouTubeAndroidPlayerApi-1.0.0/sample/src/com/examples/youtubeapidemo/DeveloperKey.java",
 		"/D/Android/PdfViewer/assets/pdfviewer/pdf.js",
 		"/D/Android/PdfViewer/assets/pdfviewer/pdf.worker.js",
-		"/D/NodeJs/iwander/routes/routes-place.js",
 		"/D/Android/ubox-ad/Timboxapp/src/com/cnc/ubox/activity/createtalk/CreateTalkActivity.java",
 		"/D/Android/YouTubeAndroidPlayerApi-1.0.0/sample/AndroidManifest.xml",
 		"/D/NodeJs/iwander/routes/routes-user.js",
@@ -354,7 +344,6 @@
 		"/D/NodeJs/iwander/config/authorization.js",
 		"/D/NodeJs/iwander/config/consts.js",
 		"/D/NodeJs/iwander/libs/factories.js",
-		"/D/NodeJs/iwander/models/user.js",
 		"/D/Android/ubox-ad/Timboxapp/src/com/cnc/ubox/utils/UboxDisplayImageOptions.java",
 		"/C/Users/Thành/Downloads/Compressed/LocationUpdates/res/values/strings.xml",
 		"/C/Users/Thành/Downloads/Compressed/LocationUpdates/src/com/example/android/location/LocationUtils.java",
@@ -368,7 +357,6 @@
 		"/D/NodeJs/iwander/node_modules/rekuire/lib/main.js",
 		"/D/NodeJs/iwander/package.json",
 		"/C/Program Files (x86)/Heroku/lib/heroku/updater.rb",
-		"/D/NodeJs/iwander/models/place.js",
 		"/D/NodeJs/iwander/libs/utils.js",
 		"/D/NodeJs/iwander/node_modules/rekuire/lib/helpers/scan.js",
 		"/D/NodeJs/iwander/node_modules/rekuire/lib/helpers/isString.js",
@@ -426,15 +414,11 @@
 		"~/nodejs/restful/server.js",
 		"~/nodejs/restful/routes.js",
 		"~/nodejs/restful/routes/routes.js",
-		"~/nodejs/restful/upload.js",
-		"~/nodejs/restful/upload.html",
-		"~/nodejs/restful/package.json",
-		"~/nodejs/restful/routes/index.js",
-		"~/nodejs/restful/routes/user.js"
+		"~/nodejs/restful/upload.js"
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 26.0
 	},
 	"find_in_files":
 	{
@@ -542,24 +526,24 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfview/forms.js",
+					"file": "routes/routes-place.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1969,
+						"buffer_size": 15951,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1951,
-								1951
+								9733,
+								9872
 							]
 						],
 						"settings":
@@ -568,100 +552,41 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": -0.0,
-						"translation.y": 315.0,
+						"translation.x": 0.0,
+						"translation.y": 4144.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/js/minimal.js",
+					"file": "routes/routes-user.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3646,
+						"buffer_size": 9709,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2745,
-								2745
+								3134,
+								3134
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 315.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/index.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1262,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								172,
-								172
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1238.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/D/Android/EffortlessEnglish/assets/pdfviewer/forms.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1956,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								607,
-								607
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": -0.0,
-						"translation.y": 45.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -669,7 +594,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 23.0
+		"height": 26.0
 	},
 	"input":
 	{
@@ -705,7 +630,7 @@
 	"project": "iwander.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 48.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -725,6 +650,10 @@
 		"height": 500.0,
 		"selected_items":
 		[
+			[
+				"",
+				"D:\\NodeJs\\effortlessenglish\\ee.sublime-workspace"
+			]
 		],
 		"width": 380.0
 	},

@@ -80,20 +80,28 @@ module.exports = function(app) {
             if (err) {
                 cb(err);
             } else {
+                // data is null, first time to log
                 if (!data) {
                     // 
                     data = new Place();
                     data.user_id = user._id;
                     data.country_name = countryName;
+                    data.lng = lng;
+                    data.lat = lat;
+                    data.time_start = timeStart.format();
+                    data.save(function(err, data) {
+                        next.ifError(err);
+                        res.send(200, data);
+                    });
+                } else {
+                    // if exits  save last log
+                    data.country_name_last = countryName;
+                    data.time_end = timeStart.format();
+                    data.save(function(err, data) {
+                        next.ifError(err);
+                        res.send(200, data);
+                    });
                 }
-                // if exits, save change lng, lat, time_start, time_end
-                data.lng = lng;
-                data.lat = lat;
-                data.time_start = timeStart.format();
-                data.save(function(err, data) {
-                    next.ifError(err);
-                    res.send(200, data);
-                });
             }
         });
     }
@@ -291,21 +299,30 @@ module.exports = function(app) {
                 // check if value is array and length must large than 0
                 var result = {};
                 if (value && Array.isArray(value) && value.length > 0) {
+                    debugger;
                     var countryName = value[0].country_name;
-                    // get first value time zone, convert it to israel time zone
+                    var lastCountry = value[0].country_name_last;
+                    // get first value time, convert it to israel time zone
                     var firstTime = moment(value[0].time_start).tz(israelTimezone);
+                    // init result with array null and first time in country
                     result[countryName] = [];
                     if (method === 'ita') {
-                        // ITA method: first log country is not israel, we consider have 1 day in israel
-                        if (countryName.toLowerCase() !== 'israel') {
-                            result['israel'] = [];
-                            result['israel'].push(firstTime);
+                        if (countryName === 'israel' && lastCountry !== 'israel')
+                            result[countryName].push(firstTime);
+                        else if (lastCountry && lastCountry.length) {
+                            result[lastCountry] = [];
+                            result[lastCountry].push(firstTime);
+                        } else
+                            result[countryName].push(firstTime);
+                    } else {
+                        if (lastCountry && lastCountry.length) {
+                            result[lastCountry] = [];
+                            result[lastCountry].push(firstTime);
                         } else {
                             result[countryName].push(firstTime);
                         }
-                    } else {
-                        result[countryName].push(firstTime);
                     }
+
                     // for each value
                     for (i = 1; i < value.length; i++) {
                         // get current time of value i, convert it to israel time zone
@@ -327,17 +344,35 @@ module.exports = function(app) {
                             addDateRange(firstTime, currentTime, result[countryName]);
                         }
                         // add current country_name
-                        if (method === 'ita') {
-                            // ITA method: check if previous country is israel, then push previous country
-                            if (countryName.toLowerCase() === 'israel') {
-                                result[countryName].push(currentTime);
-                            } else {
-                                // push current country
-                                result[value[i].country_name].push(currentTime);
-                            }
-                        } else {
-                            result[value[i].country_name].push(currentTime);
+                        var currentLastCountry = value[i].country_name_last;
+                        if (!result[currentLastCountry]) {
+                            result[currentLastCountry] = [];
                         }
+
+                        if (method === 'ita') {
+                            // case 1: first time: israel, last time: not israel -> ITA: israel (ignore aboard day)
+                            if (value[i].country_name === 'israel' && currentLastCountry !== 'israel')
+                                result[value[i].country_name].push(currentTime);
+                            // case 2: first time: not israel, calc follow last time if last time not null, else calc follow first time
+                            else if (currentLastCountry && currentLastCountry.length)
+                                result[currentLastCountry].push(currentTime);
+                            // case 3: support old cast, previous country is israel
+                            else if (countryName === 'israel') {
+                                // but previous last country is not israel, consider current is not in israel
+                                if (lastCountry && lastCountry.length && lastCountry !== 'israel')
+                                    result[value[i].country_name].push(currentTime);
+                                else
+                                // else previous last country not found or is israel, consider current is in israel
+                                    result[countryName].push(currentTime);
+                            } else
+                                result[value[i].country_name].push(currentTime);
+                        } else {
+                            if (currentLastCountry && currentLastCountry.length)
+                                result[currentLastCountry].push(currentTime);
+                            else
+                                result[value[i].country_name].push(currentTime);
+                        }
+                        lastCountry = currentLastCountry;
                         countryName = value[i].country_name;
                         firstTime = currentTime;
                     }
