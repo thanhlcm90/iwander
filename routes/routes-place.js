@@ -359,7 +359,7 @@ module.exports = function(app) {
                             // case 3: support old cast, previous country is israel
                             else if (countryName === 'israel') {
                                 // but previous last country is not israel, consider current is not in israel
-                                if (lastCountry && lastCountry.length && lastCountry !== 'israel')
+                                if (lastCountry && lastCountry.length)
                                     result[value[i].country_name].push(currentTime);
                                 else
                                 // else previous last country not found or is israel, consider current is in israel

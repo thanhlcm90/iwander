@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"co",
+				"country_name"
+			],
+			[
+				"countr",
+				"country_name"
+			],
+			[
 				"vali",
 				"validateYear"
 			],
@@ -224,21 +232,42 @@
 	"buffers":
 	[
 		{
-			"file": "routes/routes-place.js",
+			"file": "test/test-place.js",
 			"settings":
 			{
-				"buffer_size": 15951,
+				"buffer_size": 28095,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"contents": "// dependencies\nvar mongoose = require('mongoose'),\n    User = mongoose.model('User'),\n    ObjectId = mongoose.Types.ObjectId,\n    restify = require('restify'),\n    moment = require('moment'),\n    validator = require('validator'),\n    consts = require(__config_path + \"/consts\");\n\nmodule.exports = function(app) {\n\n    /**\n     * This method for request update user profile\n     *\n     * Params:\n     *  - token:        token authencate\n     *  - fullname:     new user fullname\n     *  - password:     new user password\n     *\n     * Response:\n     *  - return 404 NotFoundError      when token param missing\n     *  - return 403 NotAuthorizedError when token param is missing or not correct\n     *  - return 200 OK                 when change successfully\n     */\n    function updateUser(req, res, next) {\n        // get user model from request\n        var user = req.user;\n        if (validator.isNull(req.params.fullname) && validator.isNull(req.params.password)) {\n            return next(new restify.MissingParameterError('fullname or password cannot be blank'));\n        }\n        if (!validator.isNull(req.params.fullname)) {\n            user.fullname = req.params.fullname;\n        }\n        if (!validator.isNull(req.params.password)) {\n            // when change password, need oldpassword to confirm\n            var oldPassword = req.params.oldpassword;\n            // check old password not null\n            if (validator.isNull(oldPassword)) {\n                return next(new restify.MissingParameterError('Change password, old password cannot be blank'));\n            }\n            // check old password is matched current password\n            if (!user.authenticate(oldPassword)) {\n                return next(new restify.MissingParameterError('Change password, old password not correct'));\n            }\n            // change password\n            user.password = req.params.password;\n        }\n        user.save(function(err, data) {\n            if (err) console.log(err);\n            next.ifError(err);\n            // delete row hashed_password\n            data.hashed_password = undefined;\n            res.send(data);\n            next();\n        });\n    }\n\n    /**\n     * This method for request get user api\n     *\n     * Params:\n     *  - token:        token authencate\n     *\n     * Response:\n     *  - return 404 NotFoundError      when token param missing\n     *  - return 403 NotAuthorizedError when token param is missing or not correct\n     *  - return 200 and User data json when token param is correct and get user data successfully\n     *\n     * @param request\n     * @param response\n     * @param next method\n     */\n    function getUser(req, res, next) {\n        res.send(req.user);\n        next();\n    }\n\n    /**\n     * This method for register new user api\n     *\n     * Params:\n     *  - email:        user email\n     *  - fullname:     user fullname\n     *  - password:     user password\n     *\n     * Response:\n     *  - return 409 InternalError  when email, password param missing or not correct format or email exists\n     *  - return 201 Created        when register user is successfully\n     *\n     * @param request\n     * @param response\n     * @param next method\n     */ \n    function register(req, res, next) {\n        // validator\n        if (validator.isNull(req.params.fullname)) {\n            return next(new restify.MissingParameterError('fullname cannot be blank'));\n        } else if (validator.isNull(req.params.email)) {\n            return next(new restify.MissingParameterError('email cannot be blank'));\n        } else if (validator.isNull(req.params.password)) {\n            return next(new restify.MissingParameterError('password cannot be blank'));\n        } else if (!validator.isEmail(req.params.email)) {\n            return next(new restify.MissingParameterError('email is not correct format'));\n        }\n\n        User.findOne({\n            email: req.params.email.toLowerCase().trim()\n        }, function(err, data) {\n            next.ifError(err);\n            if (data) {\n                return next(new restify.MissingParameterError('email is exists'));\n            } else {\n                // Create a new user model, fill it up and save it to Mongodb\n                var user = new User();\n                user.fullname = req.params.fullname;\n                user.email = req.params.email;\n                user.password = req.params.password;\n                user.token = new ObjectId().toString();\n                user.save(function(err) {\n                    next.ifError(err);\n                    // delete row hashed_password\n                    user.hashed_password = undefined;\n                    // save succesfully, return status code 201 with user json\n                    res.send(201, user);\n                    next();\n                });\n            }\n        });\n    }\n\n    /**\n     * This method for login user api.\n     *\n     * We will check email & password, if it correct, check token. If token exists, return current token\n     * If token not exists, generate a new token\n     *\n     * Method: POST\n     *\n     * Params:\n     *  - email:        user email\n     *  - password:     user password\n     *\n     * Response:\n     *  - return 409 MissingParameterError  when email, password param missing or not correct format\n     *  - return 403 NotAuthorizedError     when password not correct with email\n     *  - return 200 OK                     when success\n     *\n     * @param request\n     * @param response\n     * @param next method\n     */\n    function login(req, res, next) {\n        var email = req.params.email;\n        var password = req.params.password;\n\n        // validator\n        if (validator.isNull(email)) {\n            return next(new restify.MissingParameterError('email cannot be blank'));\n        } else if (validator.isNull(password)) {\n            return next(new restify.MissingParameterError('password cannot be blank'));\n        } else if (!validator.isEmail(email)) {\n            return next(new restify.MissingParameterError('email is not correct format'));\n        }\n\n        // get email and password params and check params exists\n        // query user with email\n        var query = {\n            email: email\n        };\n        User.findOne(query, '+hashed_password', function(err, data) {\n            if (!err) { // query successfully\n                if (data === null) { // not found user\n                    return next(new restify.NotAuthorizedError(\"email doesn't exists\"));\n                } else { // found user\n                    if (!data.authenticate(password)) { // check password is correct?\n                        return next(new restify.NotAuthorizedError(\"password isn't correct\"));\n                    } else {\n                        // email, password are correct, check token\n                        var token = data.token;\n                        if (token && token.length) { // token exists\n                            // delete row hashed_password\n                            data.hashed_password = undefined;\n                            if (data.israel_spent_day === undefined) {\n                                data.israel_spent_day = 0;\n                            }\n                            // return status code 200 with current token\n                            res.send(200, data);\n                        } else {\n                            // generate new token (mongo ObjectId)\n                            token = new ObjectId().toString();\n                            data.token = token;\n                            // save new token\n                            data.save(function(err) {\n                                if (!err) {\n                                    // delete row hashed_password\n                                    data.hashed_password = undefined;\n                                    if (data.israel_spent_day === undefined) {\n                                        data.israel_spent_day = 0;\n                                    }\n                                    // save successfully, return status code 200 with new token\n                                    res.send(200, data);\n                                    return next();\n                                } else {\n                                    return next(err);\n                                }\n                            });\n                        }\n                    }\n                }\n            } else {\n                var errObj = err;\n                if (err.err) {\n                    errObj = err.err;\n                }\n                return next(new restify.InternalError(errObj));\n            }\n        });\n    }\n\n    /**\n     * This method for logout user api\n     *\n     * We will check user id, if exists, reset user token\n     *\n     * Response:\n     *  - return 403 NotAuthorizedError when token param is missing or not correct\n     *  - return 200 OK                 when token param is correct and get user data successfully\n     *\n     * @param request\n     * @param response\n     * @param next method\n     */\n    function logout(req, res, next) {\n        var user = req.user;\n        user.token = null;\n        user.save(function(err) {\n            if (!err) {\n                // saving successfully, send status code 200\n                res.send(200);\n                return next();\n            } else {\n                return next(err);\n            }\n        });\n    }\n\n    // setup route for user\n    app.get(consts.url_user_get, getUser);\n    app.post(consts.url_user_register, register);\n    app.post(consts.url_user_login, login);\n    app.post(consts.url_user_logout, logout);\n    app.put(consts.url_user_update, updateUser);\n};",
-			"file": "routes/routes-user.js",
-			"file_size": 9960,
-			"file_write_time": 130481345181439063,
+			"file": "libs/factories.js",
 			"settings":
 			{
-				"buffer_size": 9709,
+				"buffer_size": 889,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "routes/routes-place.js",
+			"settings":
+			{
+				"buffer_size": 18153,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "config/config.js",
+			"settings":
+			{
+				"buffer_size": 1753,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "server.js",
+			"settings":
+			{
+				"buffer_size": 2213,
 				"line_ending": "Windows"
 			}
 		}
@@ -287,15 +316,18 @@
 	},
 	"file_history":
 	[
-		"/D/NodeJs/iwander/models/user.js",
+		"/D/NodeJs/iwander/package.json",
+		"/D/NodeJs/iwander/routes/routes-place.js",
+		"/D/NodeJs/effortlessenglish/package.json",
 		"/D/NodeJs/iwander/models/place.js",
+		"/D/NodeJs/iwander/routes/routes-user.js",
+		"/D/NodeJs/iwander/models/user.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfviewer/forms.js",
 		"/D/Android/EffortlessEnglish/assets/forms.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfview/forms.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/js/minimal.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/index.html",
 		"/D/Android/EffortlessEnglish/assets/pdfviewer/forms.js",
-		"/D/NodeJs/iwander/routes/routes-place.js",
 		"/D/Android/EffortlessEnglish/assets/pdfviewer/index.html",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/text-selection/js/jquery.min.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/build/pdf.worker.js",
@@ -331,7 +363,6 @@
 		"/D/Android/PdfViewer/assets/pdfviewer/pdf.worker.js",
 		"/D/Android/ubox-ad/Timboxapp/src/com/cnc/ubox/activity/createtalk/CreateTalkActivity.java",
 		"/D/Android/YouTubeAndroidPlayerApi-1.0.0/sample/AndroidManifest.xml",
-		"/D/NodeJs/iwander/routes/routes-user.js",
 		"/C/Users/Thành/Downloads/Compressed/Java Example for SensorCloud/src/com/sensorcloud/Requests.java",
 		"/C/Users/Thành/Downloads/Compressed/Java Example for SensorCloud/src/UploadToSensorCloud.java",
 		"/C/Users/Thành/Downloads/Compressed/Java Example for SensorCloud/src/com/sensorcloud/Device.java",
@@ -355,7 +386,6 @@
 		"/D/NodeJs/iwander/config/server-restify.js",
 		"/D/NodeJs/iwander/configs/configs.js",
 		"/D/NodeJs/iwander/node_modules/rekuire/lib/main.js",
-		"/D/NodeJs/iwander/package.json",
 		"/C/Program Files (x86)/Heroku/lib/heroku/updater.rb",
 		"/D/NodeJs/iwander/libs/utils.js",
 		"/D/NodeJs/iwander/node_modules/rekuire/lib/helpers/scan.js",
@@ -413,12 +443,11 @@
 		"~/nodejs/restful/test/01-start-server.js",
 		"~/nodejs/restful/server.js",
 		"~/nodejs/restful/routes.js",
-		"~/nodejs/restful/routes/routes.js",
-		"~/nodejs/restful/upload.js"
+		"~/nodejs/restful/routes/routes.js"
 	],
 	"find":
 	{
-		"height": 26.0
+		"height": 34.0
 	},
 	"find_in_files":
 	{
@@ -433,6 +462,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"+0000",
+			"time_end",
+			"removeDuplicate",
 			"TextLayerBuilder",
 			"promise(",
 			"render(",
@@ -504,6 +536,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"+0300",
 			"iwander",
 			"fullname",
 			"consts.",
@@ -526,24 +559,24 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "routes/routes-place.js",
+					"file": "test/test-place.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 15951,
+						"buffer_size": 28095,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9733,
-								9872
+								23943,
+								23943
 							]
 						],
 						"settings":
@@ -553,27 +586,87 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4144.0,
+						"translation.y": 8694.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "libs/factories.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 889,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								247,
+								261
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "routes/routes-place.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 18153,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								14785,
+								14785
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5778.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "routes/routes-user.js",
+					"buffer": 3,
+					"file": "config/config.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9709,
+						"buffer_size": 1753,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3134,
-								3134
+								391,
+								400
 							]
 						],
 						"settings":
@@ -583,10 +676,40 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1238.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "server.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2213,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								419,
+								419
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
@@ -630,7 +753,7 @@
 	"project": "iwander.sublime-project",
 	"replace":
 	{
-		"height": 48.0
+		"height": 62.0
 	},
 	"save_all_on_build": true,
 	"select_file":

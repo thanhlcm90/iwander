@@ -349,32 +349,16 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 });
         });
 
-        it('return ' + successStatusCode + ' when log vietnam AGAIN 6/1/2014 at 18:00:00+0300', function(done) {
-            Factory.build('place1', function(place) {
-                request(app).put(consts.url_place_log_time)
-                    .field("token", token)
-                    .field("country_name", place.country_name)
-                    .field("lng", place.lng)
-                    .field("lat", place.lat)
-                    .field("time_start", '2014-01-06T18:00:00+0300')
-                    .expect(successStatusCode)
-                    .end(function(err, res) {
-                        if (err) console.log(res.body);
-                        res.statusCode.should.equal(successStatusCode);
-                        done();
-                    });
-            });
-        });
 
-        it('return ' + successStatusCode + ' when log israel AGAIN 10,25/1/2014 at 06:00:00+0300', function(done) {
-            async.each([10, 25], function(item, cb) {
+        it('return ' + successStatusCode + ' when log israel AGAIN 6, 10/1/2014 at 06:00:00+0300', function(done) {
+            async.each([6, 10], function(item, cb) {
                 Factory.build('place2', function(place) {
                     request(app).put(consts.url_place_log_time)
                         .field("token", token)
                         .field("country_name", place.country_name)
                         .field("lng", place.lng)
                         .field("lat", place.lat)
-                        .field("time_start", '2014-01-' + item + 'T06:00:00+0300')
+                        .field("time_start", '2014-01-' + (item < 10 ? '0' + item : item) + 'T06:00:00+0300')
                         .expect(successStatusCode)
                         .end(function(err, res) {
                             if (err) console.log(res.body);
@@ -385,21 +369,23 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
             }, done);
         });
 
-        it('return ' + successStatusCode + ' when log china AGAIN 17/1/2014 at 18:00:00+0300', function(done) {
-            Factory.build('place3', function(place) {
-                request(app).put(consts.url_place_log_time)
-                    .field("token", token)
-                    .field("country_name", place.country_name)
-                    .field("lng", place.lng)
-                    .field("lat", place.lat)
-                    .field("time_start", '2014-01-17T18:00:00+0300')
-                    .expect(successStatusCode)
-                    .end(function(err, res) {
-                        if (err) console.log(res.body);
-                        res.statusCode.should.equal(successStatusCode);
-                        done();
-                    });
-            });
+        it('return ' + successStatusCode + ' when log china AGAIN 17,25/1/2014 at 18:00:00+0300', function(done) {
+            async.each([17, 25], function(item, cb) {
+                Factory.build('place3', function(place) {
+                    request(app).put(consts.url_place_log_time)
+                        .field("token", token)
+                        .field("country_name", place.country_name)
+                        .field("lng", place.lng)
+                        .field("lat", place.lat)
+                        .field("time_start", '2014-01-' + (item < 10 ? '0' + item : item) + 'T18:00:00+0300')
+                        .expect(successStatusCode)
+                        .end(function(err, res) {
+                            if (err) console.log(res.body);
+                            res.statusCode.should.equal(successStatusCode);
+                            cb();
+                        });
+                });
+            }, done);
         });
 
 
@@ -414,24 +400,24 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                     done();
                 });
         });
-        it('return ' + successStatusCode + ' and spent = 7 when get spent day of vietnam AGAIN using REGULAR method in year 2014', function(done) {
+        it('return ' + successStatusCode + ' and spent = 6 when get spent day of vietnam AGAIN using REGULAR method in year 2014', function(done) {
             request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'vietnam') + "?token=" + token + "&method=regular&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
-                    res.body.spent.should.equal(7);
+                    res.body.spent.should.equal(6);
                     done();
                 });
         });
 
-        it('return ' + successStatusCode + ' and spent = 14 when get spent day of israel AGAIN using ITA method in year 2014', function(done) {
+        it('return ' + successStatusCode + ' and spent = 13 when get spent day of israel AGAIN using ITA method in year 2014', function(done) {
             request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'israel') + "?token=" + token + "&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
-                    res.body.spent.should.equal(14);
+                    res.body.spent.should.equal(13);
                     done();
                 });
         });
@@ -446,23 +432,23 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
                 });
         });
 
-        it('return ' + successStatusCode + ' and spent = 7 when get spent day of china AGAIN using ITA method in year 2014', function(done) {
+        it('return ' + successStatusCode + ' and spent = 8 when get spent day of china AGAIN using ITA method in year 2014', function(done) {
             request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'china') + "?token=" + token + "&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
-                    res.body.spent.should.equal(7);
+                    res.body.spent.should.equal(8);
                     done();
                 });
         });
-        it('return ' + successStatusCode + ' and spent = 8 when get spent day of china AGAIN using REGULAR method in year 2014', function(done) {
+        it('return ' + successStatusCode + ' and spent = 9 when get spent day of china AGAIN using REGULAR method in year 2014', function(done) {
             request(app).get(consts.url_place_get_date_spent.replace(':country_name', 'china') + "?token=" + token + "&method=regular&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
                     res.statusCode.should.equal(successStatusCode);
-                    res.body.spent.should.equal(8);
+                    res.body.spent.should.equal(9);
                     done();
                 });
         });
@@ -485,7 +471,7 @@ describe('Get list place and day spent', function() {
         });
     });
     describe('Valid parammeters', function() {
-        it('return ' + successStatusCode + ' and have 3 item (vietnam-5, israel-14, china-7) when get list place with day spent using ITA method in year 2014', function(done) {
+        it('return ' + successStatusCode + ' and have 3 item (vietnam-5, israel-13, china-8) when get list place with day spent using ITA method in year 2014', function(done) {
             request(app).get(consts.url_place_list + "?token=" + token + "&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
@@ -493,15 +479,15 @@ describe('Get list place and day spent', function() {
                     res.statusCode.should.equal(successStatusCode);
                     res.body.length.should.equal(3);
                     res.body[0]._id.should.equal('china');
-                    res.body[0].spent.should.equal(7);
+                    res.body[0].spent.should.equal(8);
                     res.body[1]._id.should.equal('israel');
-                    res.body[1].spent.should.equal(14);
+                    res.body[1].spent.should.equal(13);
                     res.body[2]._id.should.equal('vietnam');
                     res.body[2].spent.should.equal(5);
                     done();
                 });
         });
-        it('return ' + successStatusCode + ' and have 3 item (vietnam-7, israel-11, china-8) when get list place with day spent using REGULAR method in year 2014', function(done) {
+        it('return ' + successStatusCode + ' and have 3 item (vietnam-6, israel-11, china-9) when get list place with day spent using REGULAR method in year 2014', function(done) {
             request(app).get(consts.url_place_list + "?token=" + token + "&method=regular&year=2014")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
@@ -509,27 +495,11 @@ describe('Get list place and day spent', function() {
                     res.statusCode.should.equal(successStatusCode);
                     res.body.length.should.equal(3);
                     res.body[0]._id.should.equal('china');
-                    res.body[0].spent.should.equal(8);
+                    res.body[0].spent.should.equal(9);
                     res.body[1]._id.should.equal('israel');
                     res.body[1].spent.should.equal(11);
                     res.body[2]._id.should.equal('vietnam');
-                    res.body[2].spent.should.equal(7);
-                    done();
-                });
-        });
-        it('return ' + successStatusCode + ' and have 3 item (vietnam-7, israel-11, china-8) when get list place with day spent using REGULAR method in year 2014', function(done) {
-            request(app).get(consts.url_place_list + "?token=" + token + "&method=regular&year=2014")
-                .expect('Content-Type', jsonContentType)
-                .expect(successStatusCode)
-                .end(function(err, res) {
-                    res.statusCode.should.equal(successStatusCode);
-                    res.body.length.should.equal(3);
-                    res.body[0]._id.should.equal('china');
-                    res.body[0].spent.should.equal(8);
-                    res.body[1]._id.should.equal('israel');
-                    res.body[1].spent.should.equal(11);
-                    res.body[2]._id.should.equal('vietnam');
-                    res.body[2].spent.should.equal(7);
+                    res.body[2].spent.should.equal(6);
                     done();
                 });
         });
@@ -545,8 +515,24 @@ describe('Get list place and day spent', function() {
                     done();
                 });
         });
-        it('return ' + successStatusCode + ' and have 3 item (vietnam-7, israel-23, china-8) when get list place with day spent using REGULAR method all year', function(done) {
+        it('return ' + successStatusCode + ' and have 3 item (vietnam-6, israel-23, china-9) when get list place with day spent using REGULAR method all year', function(done) {
             request(app).get(consts.url_place_list + "?token=" + token + "&method=regular")
+                .expect('Content-Type', jsonContentType)
+                .expect(successStatusCode)
+                .end(function(err, res) {
+                    res.statusCode.should.equal(successStatusCode);
+                    res.body.length.should.equal(3);
+                    res.body[0]._id.should.equal('china');
+                    res.body[0].spent.should.equal(9);
+                    res.body[1]._id.should.equal('israel');
+                    res.body[1].spent.should.equal(23);
+                    res.body[2]._id.should.equal('vietnam');
+                    res.body[2].spent.should.equal(6);
+                    done();
+                });
+        });
+        it('return ' + successStatusCode + ' and have 3 item (vietnam-5, israel-25, china-8) when get list place with day spent using ITA method all year', function(done) {
+            request(app).get(consts.url_place_list + "?token=" + token + "&method=ita")
                 .expect('Content-Type', jsonContentType)
                 .expect(successStatusCode)
                 .end(function(err, res) {
@@ -555,9 +541,9 @@ describe('Get list place and day spent', function() {
                     res.body[0]._id.should.equal('china');
                     res.body[0].spent.should.equal(8);
                     res.body[1]._id.should.equal('israel');
-                    res.body[1].spent.should.equal(23);
+                    res.body[1].spent.should.equal(25);
                     res.body[2]._id.should.equal('vietnam');
-                    res.body[2].spent.should.equal(7);
+                    res.body[2].spent.should.equal(5);
                     done();
                 });
         });
