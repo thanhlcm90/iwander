@@ -328,7 +328,7 @@ module.exports = function(app) {
                         // get current time of value i, convert it to israel time zone
                         var currentTime = moment(value[i].time_start).tz(israelTimezone);
                         // get days diff between two date
-                        var diff = Math.abs(firstTime.diff(currentTime, 'days'));
+                        var diff = getDiffDay(firstTime, currentTime);
                         // remove duplicate days
                         if (removeDuplicate === '1' && diff === 0 && result[countryName].length > 0) {
                             // log 2 place or 1 place into 1 date, remove previous
@@ -421,6 +421,25 @@ module.exports = function(app) {
                 });
                 return callback(null, array);
             });
+    }
+
+    /**
+     * get different days between 2 days
+     *
+     * @param  {date} start start date time
+     * @param  {date} end   end date time
+     * @return {int}       return different days
+     */
+    function getDiffDay(start, end) {
+        var st = start.clone();
+        st.hour(0);
+        st.minute(0);
+        st.second(0);
+        var ed = end.clone();
+        ed.hour(0);
+        ed.minute(0);
+        ed.second(0);
+        return Math.abs(st.diff(ed, 'days'));
     }
 
     /**

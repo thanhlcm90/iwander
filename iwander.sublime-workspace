@@ -232,42 +232,42 @@
 	"buffers":
 	[
 		{
-			"file": "test/test-place.js",
+			"file": "/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/FfmpegController.java",
 			"settings":
 			{
-				"buffer_size": 28095,
+				"buffer_size": 37403,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "libs/factories.js",
+			"file": "/C/Users/thanhle/Downloads/AnimationsDemo/src/com/example/android/animationsdemo/CardFlipActivity.java",
 			"settings":
 			{
-				"buffer_size": 889,
+				"buffer_size": 7119,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "routes/routes-place.js",
+			"file": "/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/ShellUtils.java",
 			"settings":
 			{
-				"buffer_size": 18153,
+				"buffer_size": 5908,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "config/config.js",
+			"file": "/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/Clip.java",
 			"settings":
 			{
-				"buffer_size": 1753,
+				"buffer_size": 1300,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "server.js",
+			"file": "/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/filters/CropVideoFilter.java",
 			"settings":
 			{
-				"buffer_size": 2213,
+				"buffer_size": 3829,
 				"line_ending": "Windows"
 			}
 		}
@@ -316,8 +316,22 @@
 	},
 	"file_history":
 	[
-		"/D/NodeJs/iwander/package.json",
+		"/D/Android/sample/android-ffmpeg-java/external/android-ffmpeg/make_ffmpeg.sh",
+		"/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/filters/FadeVideoFilter.java",
+		"/D/Android/sample/android-ffmpeg-java/external/android-ffmpeg/make_freetype2.sh",
+		"/D/Android/sample/android-ffmpeg-java/external/android-ffmpeg/configure_make_everything.sh",
+		"/D/Android/sample/android-ffmpeg-java/external/android-ffmpeg/configure_ffmpeg.sh",
+		"/D/NodeJs/iwander/config/config.js",
+		"/D/NodeJs/iwander/config/consts.js",
+		"/C/Users/thanhle/Desktop/HomeShelvesActivity.java",
+		"/D/Android/PdfViewer/src/com/sample/pdfwebviewer/PdfViewer.java",
+		"/D/Android/mupdf/platform/android/src/com/artifex/mupdfdemo/ReaderView.java",
+		"/D/NodeJs/iwander/libs/factories.js",
 		"/D/NodeJs/iwander/routes/routes-place.js",
+		"/D/NodeJs/iwander/server.js",
+		"/D/NodeJs/iwander/test/test-user.js",
+		"/D/NodeJs/iwander/test/test-place.js",
+		"/D/NodeJs/iwander/package.json",
 		"/D/NodeJs/effortlessenglish/package.json",
 		"/D/NodeJs/iwander/models/place.js",
 		"/D/NodeJs/iwander/routes/routes-user.js",
@@ -366,20 +380,14 @@
 		"/C/Users/Thành/Downloads/Compressed/Java Example for SensorCloud/src/com/sensorcloud/Requests.java",
 		"/C/Users/Thành/Downloads/Compressed/Java Example for SensorCloud/src/UploadToSensorCloud.java",
 		"/C/Users/Thành/Downloads/Compressed/Java Example for SensorCloud/src/com/sensorcloud/Device.java",
-		"/D/NodeJs/iwander/server.js",
-		"/D/NodeJs/iwander/test/test-place.js",
-		"/D/NodeJs/iwander/test/test-user.js",
 		"/C/Users/Thành/Downloads/Compressed/Java Example for SensorCloud/src/com/sensorcloud/XDRInStream.java",
 		"/C/Users/Thành/Downloads/Compressed/LocationUpdates/src/com/example/android/location/MainActivity.java",
 		"/D/Android/ubox-ad/Timboxapp/src/com/cnc/ubox/activity/createtalk/CreateTalkCameraActivity.java",
 		"/D/NodeJs/iwander/config/authorization.js",
-		"/D/NodeJs/iwander/config/consts.js",
-		"/D/NodeJs/iwander/libs/factories.js",
 		"/D/Android/ubox-ad/Timboxapp/src/com/cnc/ubox/utils/UboxDisplayImageOptions.java",
 		"/C/Users/Thành/Downloads/Compressed/LocationUpdates/res/values/strings.xml",
 		"/C/Users/Thành/Downloads/Compressed/LocationUpdates/src/com/example/android/location/LocationUtils.java",
 		"/C/Users/Thành/Downloads/Compressed/LocationUpdates/src/com/example/android/location/LocationServiceErrorMessages.java",
-		"/D/NodeJs/iwander/config/config.js",
 		"/D/NodeJs/iwander/routes.js",
 		"/D/NodeJs/iwander/configs/consts.js",
 		"/D/NodeJs/iwander/configs/server-restify.js",
@@ -435,15 +443,7 @@
 		"~/nodejs/restful/RestError.md",
 		"~/nodejs/restful/test/test-user.js",
 		"~/nodejs/restful/routes/routes-user.js",
-		"~/nodejs/restful/test/beforeGlobal.js",
-		"~/nodejs/restful/config/config.js",
-		"~/nodejs/restful/config/server-restify.js",
-		"~/nodejs/restful/test/url-config.js",
-		"~/nodejs/restful/test/globalBefore.js",
-		"~/nodejs/restful/test/01-start-server.js",
-		"~/nodejs/restful/server.js",
-		"~/nodejs/restful/routes.js",
-		"~/nodejs/restful/routes/routes.js"
+		"~/nodejs/restful/test/beforeGlobal.js"
 	],
 	"find":
 	{
@@ -462,6 +462,14 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"BITRATE_VIDEO",
+			"execFFMPEG(",
+			" execFFMPEG(",
+			"void execFFMPEG(",
+			"execFFMPEG(",
+			"function execFFMPEG(",
+			"execFFMPEG(",
+			"execFFMPEG",
 			"+0000",
 			"time_end",
 			"removeDuplicate",
@@ -559,61 +567,113 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "test/test-place.js",
+					"file": "/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/FfmpegController.java",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 28095,
+						"buffer_size": 37403,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								23943,
-								23943
+								10247,
+								10247
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/Java/Java.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 8694.0,
+						"translation.y": 6300.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "libs/factories.js",
+					"file": "/C/Users/thanhle/Downloads/AnimationsDemo/src/com/example/android/animationsdemo/CardFlipActivity.java",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 889,
+						"buffer_size": 7119,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								247,
-								261
+								5578,
+								5578
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/Java/Java.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1710.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/ShellUtils.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5908,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.tmLanguage"
+						},
+						"translation.x": -0.0,
+						"translation.y": 3342.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/Clip.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1300,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -623,93 +683,31 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "routes/routes-place.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 18153,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								14785,
-								14785
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 5778.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "config/config.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1753,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								391,
-								400
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
 					"buffer": 4,
-					"file": "server.js",
+					"file": "/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/filters/CropVideoFilter.java",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2213,
+						"buffer_size": 3829,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								419,
-								419
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/Java/Java.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 945.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -717,7 +715,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 26.0
+		"height": 23.0
 	},
 	"input":
 	{
@@ -753,7 +751,7 @@
 	"project": "iwander.sublime-project",
 	"replace":
 	{
-		"height": 62.0
+		"height": 42.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -795,7 +793,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 241.0,
+	"side_bar_width": 226.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
