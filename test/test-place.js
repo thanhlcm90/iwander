@@ -219,7 +219,7 @@ describe('Get day spent api get:' + consts.url_place_get_date_spent, function() 
         });
 
         it('return ' + successStatusCode + ' when log israel 4,6,11,17,26/1/2014 at 06:00:00+0300', function(done) {
-            async.each([4, 6, 11, 17, 26], function(item, cb) {
+            async.each([4, 4, 6, 11, 17, 26], function(item, cb) {
                 Factory.build('place2', function(place) {
                     request(app).put(consts.url_place_log_time)
                         .field("token", token)

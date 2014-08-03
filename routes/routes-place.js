@@ -323,6 +323,18 @@ module.exports = function(app) {
                         }
                     }
 
+                    // remove all duplicate
+                    var inc = 1;
+                    while (inc < value.length) {
+                        var st = moment(value[inc - 1].time_start).tz(israelTimezone);
+                        var ed = moment(value[inc].time_start).tz(israelTimezone);
+                        var diff = getDiffDay(st, ed);
+                        if (diff === 0) {
+                            value.splice(inc - 1, 1);
+                        }
+                        inc++;
+                    }
+
                     // for each value
                     for (i = 1; i < value.length; i++) {
                         // get current time of value i, convert it to israel time zone
@@ -334,47 +346,49 @@ module.exports = function(app) {
                             // log 2 place or 1 place into 1 date, remove previous
                             result[countryName].splice(-1);
                         }
-                        // result hasn't object with key is country name, create one with array null
-                        if (!result[value[i].country_name]) {
-                            result[value[i].country_name] = [];
-                        }
-                        // check if diff time between previous time_start and now time_start
-                        // diff > 1, add missing date is previous country_name
-                        if (diff > 1) {
-                            addDateRange(firstTime, currentTime, result[countryName]);
-                        }
-                        // add current country_name
-                        var currentLastCountry = value[i].country_name_last;
-                        if (!result[currentLastCountry]) {
-                            result[currentLastCountry] = [];
-                        }
+                        if (diff > 0) {
+                            // result hasn't object with key is country name, create one with array null
+                            if (!result[value[i].country_name]) {
+                                result[value[i].country_name] = [];
+                            }
+                            // check if diff time between previous time_start and now time_start
+                            // diff > 1, add missing date is previous country_name
+                            if (diff > 1) {
+                                addDateRange(firstTime, currentTime, result[countryName]);
+                            }
+                            // add current country_name
+                            var currentLastCountry = value[i].country_name_last;
+                            if (!result[currentLastCountry]) {
+                                result[currentLastCountry] = [];
+                            }
 
-                        if (method === 'ita') {
-                            // case 1: first time: israel, last time: not israel -> ITA: israel (ignore aboard day)
-                            if (value[i].country_name === 'israel' && currentLastCountry !== 'israel')
-                                result[value[i].country_name].push(currentTime);
-                            // case 2: first time: not israel, calc follow last time if last time not null, else calc follow first time
-                            else if (currentLastCountry && currentLastCountry.length)
-                                result[currentLastCountry].push(currentTime);
-                            // case 3: support old cast, previous country is israel
-                            else if (countryName === 'israel') {
-                                // but previous last country is not israel, consider current is not in israel
-                                if (lastCountry && lastCountry.length)
+                            if (method === 'ita') {
+                                // case 1: first time: israel, last time: not israel -> ITA: israel (ignore aboard day)
+                                if (value[i].country_name === 'israel' && currentLastCountry !== 'israel')
                                     result[value[i].country_name].push(currentTime);
+                                // case 2: first time: not israel, calc follow last time if last time not null, else calc follow first time
+                                else if (currentLastCountry && currentLastCountry.length)
+                                    result[currentLastCountry].push(currentTime);
+                                // case 3: support old cast, previous country is israel
+                                else if (countryName === 'israel') {
+                                    // but previous last country is not israel, consider current is not in israel
+                                    if (lastCountry && lastCountry.length)
+                                        result[value[i].country_name].push(currentTime);
+                                    else
+                                    // else previous last country not found or is israel, consider current is in israel
+                                        result[countryName].push(currentTime);
+                                } else
+                                    result[value[i].country_name].push(currentTime);
+                            } else {
+                                if (currentLastCountry && currentLastCountry.length)
+                                    result[currentLastCountry].push(currentTime);
                                 else
-                                // else previous last country not found or is israel, consider current is in israel
-                                    result[countryName].push(currentTime);
-                            } else
-                                result[value[i].country_name].push(currentTime);
-                        } else {
-                            if (currentLastCountry && currentLastCountry.length)
-                                result[currentLastCountry].push(currentTime);
-                            else
-                                result[value[i].country_name].push(currentTime);
+                                    result[value[i].country_name].push(currentTime);
+                            }
+                            lastCountry = currentLastCountry;
+                            countryName = value[i].country_name;
+                            firstTime = currentTime;
                         }
-                        lastCountry = currentLastCountry;
-                        countryName = value[i].country_name;
-                        firstTime = currentTime;
                     }
                 }
                 // convert object to array
