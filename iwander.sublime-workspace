@@ -231,14 +231,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "routes/routes-place.js",
-			"settings":
-			{
-				"buffer_size": 18594,
-				"line_ending": "Windows"
-			}
-		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -263,7 +255,7 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 416.0
+		"width": 400.0
 	},
 	"console":
 	{
@@ -284,6 +276,11 @@
 	},
 	"file_history":
 	[
+		"/D/Android/ubox-ad/Timboxapp/AndroidManifest.xml",
+		"/D/NodeJs/iwander/routes/routes-place.js",
+		"/D/NodeJs/iwander/test/test-place.js",
+		"/C/Users/thanhle/Downloads/AnimationsDemo/res/values/integers.xml",
+		"/D/NodeJs/iwander/models/place.js",
 		"/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/FfmpegController.java",
 		"/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/filters/CropVideoFilter.java",
 		"/D/Android/sample/android-ffmpeg-java/src/org/ffmpeg/android/Clip.java",
@@ -300,13 +297,10 @@
 		"/D/Android/PdfViewer/src/com/sample/pdfwebviewer/PdfViewer.java",
 		"/D/Android/mupdf/platform/android/src/com/artifex/mupdfdemo/ReaderView.java",
 		"/D/NodeJs/iwander/libs/factories.js",
-		"/D/NodeJs/iwander/routes/routes-place.js",
 		"/D/NodeJs/iwander/server.js",
 		"/D/NodeJs/iwander/test/test-user.js",
-		"/D/NodeJs/iwander/test/test-place.js",
 		"/D/NodeJs/iwander/package.json",
 		"/D/NodeJs/effortlessenglish/package.json",
-		"/D/NodeJs/iwander/models/place.js",
 		"/D/NodeJs/iwander/routes/routes-user.js",
 		"/D/NodeJs/iwander/models/user.js",
 		"/C/Users/Thành/Downloads/Compressed/pdfjs-1.0.68-dist/pdfjs/examples/pdfviewer/forms.js",
@@ -409,9 +403,7 @@
 		"/home/thanhle/nodejs/restful-nodejs/package.json",
 		"/home/thanhle/nodejs/restful-nodejs/config/config.js",
 		"/home/thanhle/nodejs/restful-nodejs/test/global.js",
-		"/home/thanhle/nodejs/restful-nodejs/libs/utils.js",
-		"~/nodejs/restful/models/user.js",
-		"~/nodejs/restful/config/authorization.js"
+		"/home/thanhle/nodejs/restful-nodejs/libs/utils.js"
 	],
 	"find":
 	{
@@ -430,6 +422,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"time_end",
 			".diff(",
 			"BITRATE_VIDEO",
 			"execFFMPEG(",
@@ -536,39 +529,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "routes/routes-place.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 18594,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								17597,
-								17597
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 6127.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -632,7 +594,7 @@
 		[
 			[
 				"",
-				"D:\\NodeJs\\effortlessenglish\\ee.sublime-workspace"
+				"D:\\NodeJs\\effortlessenglish\\project.sublime-workspace"
 			]
 		],
 		"width": 380.0

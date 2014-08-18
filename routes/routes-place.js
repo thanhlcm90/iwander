@@ -99,6 +99,7 @@ module.exports = function(app) {
                     data.time_end = timeStart.format();
                     data.save(function(err, data) {
                         next.ifError(err);
+                        res.header("Content-Type", "application/json; charset=utf-8");
                         res.send(200, data);
                     });
                 }
@@ -146,6 +147,7 @@ module.exports = function(app) {
             } else if (countryName === 'israel') {
                 spent = user.israel_spent_day;
             }
+            res.header("Content-Type", "application/json; charset=utf-8");
             res.send(200, {
                 _id: countryName,
                 spent: spent
@@ -181,6 +183,7 @@ module.exports = function(app) {
                 }
                 place.push(item);
             }
+            res.header("Content-Type", "application/json; charset=utf-8");
             res.send(200, place);
         })
     }

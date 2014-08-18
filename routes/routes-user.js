@@ -121,6 +121,7 @@ module.exports = function(app) {
                     // delete row hashed_password
                     user.hashed_password = undefined;
                     // save succesfully, return status code 201 with user json
+                    res.header("Content-Type", "application/json; charset=utf-8");
                     res.send(201, user);
                     next();
                 });
@@ -184,6 +185,7 @@ module.exports = function(app) {
                                 data.israel_spent_day = 0;
                             }
                             // return status code 200 with current token
+                            res.header("Content-Type", "application/json; charset=utf-8");
                             res.send(200, data);
                         } else {
                             // generate new token (mongo ObjectId)
@@ -198,6 +200,7 @@ module.exports = function(app) {
                                         data.israel_spent_day = 0;
                                     }
                                     // save successfully, return status code 200 with new token
+                                    res.header("Content-Type", "application/json; charset=utf-8");
                                     res.send(200, data);
                                     return next();
                                 } else {
